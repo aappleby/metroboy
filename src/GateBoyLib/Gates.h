@@ -1,6 +1,6 @@
 #pragma once
-#include "CoreLib/Types.h"
-#include "CoreLib/Tests.h"
+#include "MetroLib/src/CoreLib/Types.h"
+#include "MetroLib/src/CoreLib/Tests.h"
 
 #include "GateBoyLib/Utils.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CoreLib/Types.h"
-#include "GameboyLib/MetroBoyCPU.h"
+#include "MetroLib/src/CoreLib/Types.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
 
 #include "MetroBoyLib/MetroBoyBootrom.h"
 #include "MetroBoyLib/MetroBoyCart.h"

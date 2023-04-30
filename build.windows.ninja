@@ -15,7 +15,7 @@ build_mode = /O2 /D CONFIG_RELEASE /D NDEBUG /D _CRT_SECURE_NO_WARNINGS
 default_gpp = CL.exe /nologo /std:c++latest /EHsc /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2 /sdl- /Gm- /GS- /Z7 /DEBUG /FS /GL
 default_gcc = CL.exe /nologo /std:c17 /showIncludes
 
-default_includes = /Isrc /Isubmodules /Isubmodules/glad /Isrc/tree-sitter/lib/include /Isubmodules/tree-sitter/lib/include
+default_includes = /Isrc /Isymlinks /Isymlinks/glad /Isrc/tree-sitter/lib/include /Isymlinks/tree-sitter/lib/include
 global_libs      = src/SDL2.lib
 
 ################################################################################
@@ -73,9 +73,9 @@ build bin/MetronicaApp.exe  : copy bin/MetronicaApp
 ################################################################################
 # TreeSitter libraries
 
-build obj/tree-sitter/lib.o     : compile_c submodules/tree-sitter/lib/src/lib.c
-build obj/tree-sitter/parser.o  : compile_c submodules/tree-sitter-cpp/src/parser.c
-build obj/tree-sitter/scanner.o : compile_c submodules/tree-sitter-cpp/src/scanner.cc
+build obj/tree-sitter/lib.o     : compile_c symlinks/tree-sitter/lib/src/lib.c
+build obj/tree-sitter/parser.o  : compile_c symlinks/tree-sitter-cpp/src/parser.c
+build obj/tree-sitter/scanner.o : compile_c symlinks/tree-sitter-cpp/src/scanner.cc
 
 build bin/TreeSitter.a : lib $
   obj/tree-sitter/lib.o $
@@ -319,13 +319,13 @@ build bin/MetroBoyLib.a : lib $
 ################################################################################
 # Other libs
 
-build obj/glad.o          : compile_cpp submodules/glad/glad.c
+build obj/glad.o          : compile_cpp symlinks/glad/glad.c
 
-build obj/imgui.o         : compile_cpp submodules/imgui/imgui.cpp
-build obj/imgui_demo.o    : compile_cpp submodules/imgui/imgui_demo.cpp
-build obj/imgui_draw.o    : compile_cpp submodules/imgui/imgui_draw.cpp
-build obj/imgui_tables.o  : compile_cpp submodules/imgui/imgui_tables.cpp
-build obj/imgui_widgets.o : compile_cpp submodules/imgui/imgui_widgets.cpp
+build obj/imgui.o         : compile_cpp symlinks/imgui/imgui.cpp
+build obj/imgui_demo.o    : compile_cpp symlinks/imgui/imgui_demo.cpp
+build obj/imgui_draw.o    : compile_cpp symlinks/imgui/imgui_draw.cpp
+build obj/imgui_tables.o  : compile_cpp symlinks/imgui/imgui_tables.cpp
+build obj/imgui_widgets.o : compile_cpp symlinks/imgui/imgui_widgets.cpp
 
 build bin/imgui.a : lib $
   obj/imgui.o $

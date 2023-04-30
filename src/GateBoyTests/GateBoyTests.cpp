@@ -1,12 +1,12 @@
 #include "GateBoyTests/GateBoyTests.h"
 
-#include "GameboyLib/Assembler.h"
+#include "MetroLib/src/GameboyLib/Assembler.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/Utils.h"
-#include "CoreLib/Constants.h"
-#include "CoreLib/Tests.h"
-#include "CoreLib/File.h"
+#include "MetroLib/src/CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Tests.h"
+#include "MetroLib/src/CoreLib/File.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -53,10 +53,10 @@ int main(int argc, char** argv) {
     results += a.test_generic         (proto.get());
     LOG_B("\n");
 
-    LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
-    LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
-    LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
-    LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
+    LOG_R("%s: %6d check fail\n", __FUNCTION__, results.check_fail);
+    LOG_G("%s: %6d test pass\n", __FUNCTION__,  results.test_pass);
+    LOG_R("%s: %6d test fail\n", __FUNCTION__,  results.test_fail);
 
     if (results.test_fail > 21) {
       any_fail = true;
@@ -77,10 +77,10 @@ int main(int argc, char** argv) {
     results += t.test_reset(proto.get(), 0x01); // OK
     results += t.test_generic(proto.get());
 
-    LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
-    LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
-    LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
-    LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
+    LOG_R("%s: %6d check fail\n", __FUNCTION__, results.check_fail);
+    LOG_G("%s: %6d test pass\n", __FUNCTION__,  results.test_pass);
+    LOG_R("%s: %6d test fail\n", __FUNCTION__,  results.test_fail);
     LOG_B("\n");
 
     if (results.test_fail > 21) {
@@ -102,10 +102,10 @@ int main(int argc, char** argv) {
     results += t.test_reset(proto.get(), 0x01); // OK
     results += t.test_generic(proto.get());
 
-    LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
-    LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
-    LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
-    LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
+    LOG_R("%s: %6d check fail\n", __FUNCTION__, results.check_fail);
+    LOG_G("%s: %6d test pass\n", __FUNCTION__,  results.test_pass);
+    LOG_R("%s: %6d test fail\n", __FUNCTION__,  results.test_fail);
     LOG_B("\n");
 
     if (results.test_fail > 21) {
@@ -156,10 +156,10 @@ int main(int argc, char** argv) {
     //results += t.test_fuzz_reg2(proto.get(), reps * 10);
     results += t.test_fuzz_spu(proto.get(), reps * 10);
 
-    LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
-    LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
-    LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
-    LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
+    LOG_R("%s: %6d check fail\n", __FUNCTION__, results.check_fail);
+    LOG_G("%s: %6d test pass\n", __FUNCTION__,  results.test_pass);
+    LOG_R("%s: %6d test fail\n", __FUNCTION__,  results.test_fail);
     LOG_B("\n");
 
     if (results.test_fail) {
@@ -1785,7 +1785,7 @@ TestResults GateBoyTests::test_bootrom(const IGateBoy* proto) {
 
   for (int i = 0; i < 16; i++) {
     uint8_t data_out = gb->dbg_read(dummy_cart, i).unwrap();
-    EXPECT_EQ(data_out, DMG_ROM_bin[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, data_out, DMG_ROM_bin[i]);
+    EXPECT_EQ(data_out, get_DMG_ROM()[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, data_out, get_DMG_ROM()[i]);
   }
 
   TEST_DONE();

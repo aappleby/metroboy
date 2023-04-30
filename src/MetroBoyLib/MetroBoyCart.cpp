@@ -1,7 +1,7 @@
 #include "MetroBoyLib/MetroBoyCart.h"
 
-#include "GameboyLib/MetroBoyCPU.h"
-#include "GameboyLib/Constants.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
 
 #include <assert.h>
 #include <string.h>

@@ -1,12 +1,12 @@
 #include "Metronica/MetronicaApp.h"
 
 
-#include "AppLib/AppHost.h"
-#include "AudioLib/Audio.h"
-#include "AppLib/GLBase.h"
-#include "CoreLib/Constants.h"
-#include "CoreLib/Dumper.h" // for StringDumper
-#include "CoreLib/Tests.h"
+#include "MetroLib/src/AppLib/AppHost.h"
+#include "MetroLib/src/AudioLib/Audio.h"
+#include "MetroLib/src/AppLib/GLBase.h"
+#include "MetroLib/src/CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Dumper.h" // for StringDumper
+#include "MetroLib/src/CoreLib/Tests.h"
 #include "GateBoyLib/GateBoyDumper.h"
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoy.h"

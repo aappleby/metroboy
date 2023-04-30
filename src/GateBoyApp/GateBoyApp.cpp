@@ -2,13 +2,13 @@
 #include "GateBoyLib/GateBoyDumper.h"
 #include "GateBoyLib/Utils.h"
 
-#include "CoreLib/Constants.h"
-#include "CoreLib/Dumper.h" // for StringDumper
-#include "CoreLib/Tests.h"
+#include "MetroLib/src/CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Dumper.h" // for StringDumper
+#include "MetroLib/src/CoreLib/Tests.h"
 
-#include "AppLib/AppHost.h"
-#include "AudioLib/Audio.h"
-#include "AppLib/GLBase.h"
+#include "MetroLib/src/AppLib/AppHost.h"
+#include "MetroLib/src/AudioLib/Audio.h"
+#include "MetroLib/src/AppLib/GLBase.h"
 
 #define SDL_MAIN_HANDLED
 #ifdef _MSC_VER
@@ -20,8 +20,6 @@
 
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoy.h"
-
-//#include "glad/glad.h"
 
 //-----------------------------------------------------------------------------
 
@@ -170,7 +168,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/microtests/DMG/sprite4_0_b.gb", cart);
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-  load_blob("LinksAwakening.gb", cart);
+  load_blob("../LinksAwakening.gb", cart);
   //load_blob("tetris.gb", cart);
   //load_blob("SML.gb", cart);
   //load_blob("pman.gb", cart);
@@ -393,7 +391,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
   //----------------------------------------
 
   {
-    IGateBoy* gb2 = show_gb_ab ? gb_thread->gb.state()->get_a() : gb_thread->gb.state()->get_b();
+    IGateBoy* gb2 = show_gb_ab ? gb_thread->gb.top().get_a() : gb_thread->gb.top().get_b();
 
     temp_gb.cpu = gb2->get_cpu();
     temp_gb.mem = gb2->get_mem();

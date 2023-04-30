@@ -1,15 +1,16 @@
 #pragma once
 
-#include "CoreLib/StateStack.h"
-#include "CoreLib/File.h"
-#include "AppLib/App.h"
-#include "AppLib/GridPainter.h"
-#include "GameboyLib/GBBlitter.h"
-#include "AppLib/DumpPainter.h"
-#include "AppLib/Blitter.h"
-#include "AppLib/GridPainter.h"
-#include "AppLib/TextPainter.h"
 #include "MetroBoyLib/MetroBoy.h"
+
+#include "MetroLib/src/CoreLib/StateStack.h"
+#include "MetroLib/src/CoreLib/File.h"
+#include "MetroLib/src/AppLib/App.h"
+#include "MetroLib/src/AppLib/GridPainter.h"
+#include "MetroLib/src/GameboyLib/GBBlitter.h"
+#include "MetroLib/src/AppLib/DumpPainter.h"
+#include "MetroLib/src/AppLib/Blitter.h"
+#include "MetroLib/src/AppLib/GridPainter.h"
+#include "MetroLib/src/AppLib/TextPainter.h"
 
 #include <string>
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "CoreLib/Blobs.h"
-#include "CoreLib/Result.h"
+#include "MetroLib/src/CoreLib/Blobs.h"
+#include "MetroLib/src/CoreLib/Result.h"
 
 struct GateBoyCpu;
 struct GateBoyMem;

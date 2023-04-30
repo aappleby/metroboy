@@ -6,8 +6,8 @@
 #include <string>
 #include <span>
 
-#include "CoreLib/Check.h"
-#include "CoreLib/Blobs.h"
+#include "MetroLib/src/CoreLib/Check.h"
+#include "MetroLib/src/CoreLib/Blobs.h"
 #include "TreeSymbols.h"
 
 typedef std::span<const char> cspan;

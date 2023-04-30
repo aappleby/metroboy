@@ -51,7 +51,7 @@
     <NMakeCleanCommandLine>cd $(SolutionDir) &amp;&amp; ninja -f .\build.windows.ninja -t clean</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>cd $(SolutionDir) &amp;&amp; ninja -f .\build.windows.ninja -t clean &amp;&amp; ninja -f .\build.windows.ninja</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);_DEBUG;_MSC_VER=1932;CONFIG_DEBUG;_CONSOLE;_MBCS</NMakePreprocessorDefinitions>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)src;$(SolutionDir)submodules</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)src;$(SolutionDir)symlinks</IncludePath>
     <AdditionalOptions>/std:c++20</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>

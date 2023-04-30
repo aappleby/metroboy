@@ -1,6 +1,6 @@
 #include "GateBoyLib/GateBoyExtBus.h"
 
-#include "CoreLib/Log.h"
+#include "MetroLib/src/CoreLib/Log.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/Gates.h"
 

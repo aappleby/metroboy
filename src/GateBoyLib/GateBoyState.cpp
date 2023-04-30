@@ -1,10 +1,10 @@
 #include "GateBoyLib/GateBoyState.h"
 
-#include "GateBoyLib/Utils.h"
-#include "CoreLib/Constants.h"
-#include "CoreLib/Result.h"
 #include "GateBoyLib/Gates.h"
-#include "GameboyLib/Constants.h"
+#include "GateBoyLib/Utils.h"
+#include "MetroLib/src/CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Result.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
 
 
 #include <cstring>

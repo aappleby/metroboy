@@ -1,8 +1,8 @@
 #include "MetroBoyLib/MetroBoyInterrupts.h"
 
-#include "GameboyLib/MetroBoyCPU.h"
-#include "GameboyLib/Constants.h"
-#include "CoreLib/Constants.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
+#include "MetroLib/src/CoreLib/Constants.h"
 
 //-----------------------------------------------------------------------------
 

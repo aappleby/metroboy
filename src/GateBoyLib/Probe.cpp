@@ -6,7 +6,7 @@
 
 #include "GateBoyLib/Gates.h"
 #include "GateBoyLib/Regs.h"
-#include "CoreLib/Dumper.h"
+#include "MetroLib/src/CoreLib/Dumper.h"
 
 #pragma warning(disable: 4996)
 
@@ -77,7 +77,7 @@ void Probes::dump(Dumper& d) const {
   }
 }
 
-void probe(const char* signal_name, wire s) {
+void probe(const char* signal_name, bool s) {
   if (thread_probes) {
     thread_probes->probe_wire(signal_name, s);
   }

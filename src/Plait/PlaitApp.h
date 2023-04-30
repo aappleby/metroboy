@@ -1,15 +1,15 @@
 #pragma once
 
-#include "AppLib/App.h"
-#include "AppLib/BoxPainter.h"
-#include "AppLib/GridPainter.h"
-#include "AppLib/LinePainter.h"
-#include "AppLib/TextPainter.h"
-#include "AppLib/DumpPainter.h"
-#include "AppLib/Blitter.h"
-#include "AppLib/Viewport.h"
+#include "MetroLib/src/AppLib/App.h"
+#include "MetroLib/src/AppLib/BoxPainter.h"
+#include "MetroLib/src/AppLib/GridPainter.h"
+#include "MetroLib/src/AppLib/LinePainter.h"
+#include "MetroLib/src/AppLib/TextPainter.h"
+#include "MetroLib/src/AppLib/DumpPainter.h"
+#include "MetroLib/src/AppLib/Blitter.h"
+#include "MetroLib/src/AppLib/Viewport.h"
 
-//#include "CoreLib/Debug.h"
+//#include "MetroLib/src/CoreLib/Debug.h"
 
 #include "Plait/Plait.h"
 #include "Plait/CellDB.h"

@@ -105,7 +105,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/symlinks</AdditionalIncludeDirectories>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <SDLCheck>false</SDLCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -125,7 +125,7 @@
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>CONFIG_RELEASE;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/symlinks</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <SDLCheck>false</SDLCheck>
@@ -145,7 +145,7 @@
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>CONFIG_REGRESSION;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/symlinks</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <SDLCheck>false</SDLCheck>
@@ -168,7 +168,7 @@
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>CONFIG_FASTMODE;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/symlinks</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <SDLCheck>false</SDLCheck>

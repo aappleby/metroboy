@@ -1,9 +1,9 @@
 #include "MetroBoyLib/MetroBoyBootrom.h"
 
-#include "GameboyLib/MetroBoyCPU.h"
-#include "GameboyLib/Constants.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
 
-#include "CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Constants.h"
 #include <assert.h>
 
 //-----------------------------------------------------------------------------
@@ -12,7 +12,7 @@ void MetroBoyBootrom::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
   if (req.read && req.addr <= 0x00FF && !disable_bootrom) {
     ack.addr = req.addr;
-    ack.data_lo = DMG_ROM_bin[req.addr];
+    ack.data_lo = get_DMG_ROM()[req.addr];
     ack.read++;
   }
 }

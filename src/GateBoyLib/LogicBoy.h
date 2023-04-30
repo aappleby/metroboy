@@ -1,14 +1,13 @@
 #pragma once
 
-#include "AudioLib/Audio.h"
-#include "GameboyLib/MetroBoyCPU.h"
-
-#include "GateBoyLib/IGateBoy.h"
-#include "CoreLib/Constants.h"
-#include "CoreLib/Result.h"
-#include "GateBoyLib/LogicBoyState.h"
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/IGateBoy.h"
+#include "GateBoyLib/LogicBoyState.h"
 #include "GateBoyLib/Utils.h"
+#include "MetroLib/src/AudioLib/Audio.h"
+#include "MetroLib/src/CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Result.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
 
 sample_t ch1_audio_out_fast(const SpuChannel1& ch3);
 sample_t ch2_audio_out_fast(const SpuChannel2& ch3);

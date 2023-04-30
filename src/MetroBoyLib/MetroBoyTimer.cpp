@@ -1,10 +1,10 @@
 #include "MetroBoyLib/MetroBoyTimer.h"
-#include "CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Constants.h"
 #include <assert.h>
 
-#include "CoreLib/Dumper.h"
-#include "GameboyLib/MetroBoyCPU.h"
-#include "GameboyLib/Constants.h"
+#include "MetroLib/src/CoreLib/Dumper.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
 
 // Passes mooneye timer tests
 

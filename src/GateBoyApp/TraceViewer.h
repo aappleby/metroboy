@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #if 0
-#include "CoreLib/SignalTree.h"
+#include "MetroLib/src/CoreLib/SignalTree.h"
 
 class TraceViewer {
 public:
@@ -10,7 +10,7 @@ public:
   uint32_t* framebuffer;
   int fb_width;
   int fb_height;
- 
+
 
   int screen_x;
   int screen_y;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GameboyLib/Assembler.h"
-#include "CoreLib/Types.h"
-#include "CoreLib/StateStack.h"
-#include "CoreLib/File.h"
+#include "MetroLib/src/GameboyLib/Assembler.h"
+#include "MetroLib/src/CoreLib/Types.h"
+#include "MetroLib/src/CoreLib/StateStack.h"
+#include "MetroLib/src/CoreLib/File.h"
 
 #include "GateBoyLib/GateBoyPair.h"
 

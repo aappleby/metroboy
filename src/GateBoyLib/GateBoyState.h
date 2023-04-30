@@ -1,10 +1,9 @@
 #pragma once
 
-#include "CoreLib/Result.h"
-#include "CoreLib/FieldInfo.h"
+#include "MetroLib/src/CoreLib/Result.h"
+#include "MetroLib/src/CoreLib/FieldInfo.h"
 
 #include "GateBoyLib/GateBoyConfig.h"
-
 #include "GateBoyLib/GateBoyTimer.h"
 #include "GateBoyLib/GateBoyLCD.h"
 #include "GateBoyLib/GateBoyDMA.h"

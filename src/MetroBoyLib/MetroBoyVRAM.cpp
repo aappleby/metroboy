@@ -1,8 +1,8 @@
 #include "MetroBoyLib/MetroBoyVRAM.h"
 
-#include "CoreLib/Dumper.h"
-#include "GameboyLib/MetroBoyCPU.h"
-#include "GameboyLib/Constants.h"
+#include "MetroLib/src/CoreLib/Dumper.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
 
 #include <assert.h>
 #include <memory.h>

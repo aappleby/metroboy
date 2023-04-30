@@ -2,8 +2,8 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-#include "CoreLib/Constants.h"
-#include "CoreLib/Log.h"
+#include "MetroLib/src/CoreLib/Constants.h"
+#include "MetroLib/src/CoreLib/Log.h"
 
 #include <iostream>
 #include <chrono>
@@ -79,14 +79,14 @@ void GateBoyThread::poweron(bool fastboot) {
   CHECK_P(sim_paused());
   clear_steps();
   gb.reset_history();
-  gb->poweron(fastboot);
+  gb.top().poweron(fastboot);
 }
 
 void GateBoyThread::reset() {
   CHECK_P(sim_paused());
   clear_steps();
   gb.reset_history();
-  gb->reset();
+  gb.top().reset();
 }
 
 //----------------------------------------
@@ -98,8 +98,8 @@ void GateBoyThread::add_steps(int64_t steps) {
 }
 
 void GateBoyThread::run_to(uint64_t phase) {
-  while(gb->get_sys().gb_phase_total_old != phase) {
-    gb->next_phase(cart_blob);
+  while(gb.top().get_sys().gb_phase_total_old != phase) {
+    gb.top().next_phase(cart_blob);
   }
 }
 
@@ -116,7 +116,7 @@ int64_t GateBoyThread::get_steps() const {
 }
 
 void GateBoyThread::set_buttons(uint8_t buttons) {
-  gb->set_buttons(buttons);
+  set_buttons(buttons);
 }
 
 bool GateBoyThread::sim_paused() const {
@@ -141,7 +141,7 @@ void GateBoyThread::clear_steps() {
   CHECK_P(sim_paused());
   step_count = 0;
   old_sim_time = 0;
-  prev_phase_total = gb->get_sys().gb_phase_total_old;
+  prev_phase_total = gb.top().get_sys().gb_phase_total_old;
   phase_rate_smooth = 0;
 }
 
@@ -150,11 +150,11 @@ void GateBoyThread::clear_steps() {
 void GateBoyThread::dump(Dumper& d) {
   CHECK_P(sim_paused());
 
-  next_phase_total = gb->get_sys().gb_phase_total_old;
+  next_phase_total = gb.top().get_sys().gb_phase_total_old;
 
   d("State count   : %d\n", gb.state_count());
   d("State size    : %d K\n", gb.state_size_bytes() / 1024);
-  //d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
+  //d("BGB cycle     : 0x%08x\n",  (gb.top().phase_total / 4) - 0x10000);
   d("Sim clock     : %f\n",      double(next_phase_total) / (4194304.0 * 2));
   d("Steps left    : %lld\n", step_count.load());
 
@@ -179,9 +179,9 @@ void GateBoyThread::load_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
   gb.reset_history();
   clear_steps();
-  gb->load_raw_dump(bs);
+  gb.top().load_raw_dump(bs);
   cart_blob = bs.rest();
-  prev_phase_total = gb->get_sys().gb_phase_total_old;
+  prev_phase_total = gb.top().get_sys().gb_phase_total_old;
 }
 
 //------------------------------------------------------------------------------
@@ -189,7 +189,7 @@ void GateBoyThread::load_raw_dump(BlobStream& bs) {
 void GateBoyThread::save_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
   clear_steps();
-  gb->save_raw_dump(bs);
+  gb.top().save_raw_dump(bs);
   bs.write(cart_blob.data(), cart_blob.size());
 }
 
@@ -213,7 +213,7 @@ void GateBoyThread::load_bootrom(const char* source) {
   CHECK_P(sim_paused());
   Assembler as;
   as.assemble(source);
-  gb->load_bootrom(as.block_code->data(), (int)as.block_code->size());
+  gb.top().load_bootrom(as.block_code->data(), (int)as.block_code->size());
 }
 
 //------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ void GateBoyThread::run_steps() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::next_phase() {
-  if (gb->get_sys().gb_phase_total_old % 10000 == 0) {
+  if (gb.top().get_sys().gb_phase_total_old % 10000 == 0) {
     gb.push();
 
 #ifdef _MSC_VER
@@ -294,7 +294,7 @@ void GateBoyThread::next_phase() {
 #endif
   }
 
-  gb->next_phase(cart_blob);
+  gb.top().next_phase(cart_blob);
   if (step_count) step_count--;
 }
 

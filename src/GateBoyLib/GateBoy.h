@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CoreLib/File.h"
-#include "CoreLib/Result.h"
-#include "GameboyLib/MetroBoyCPU.h"
-#include "GameboyLib/Constants.h"
-#include "CoreLib/Log.h"
+#include "MetroLib/src/CoreLib/File.h"
+#include "MetroLib/src/CoreLib/Result.h"
+#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
+#include "MetroLib/src/CoreLib/Log.h"
 
 #include "GateBoyLib/IGateBoy.h"
 #include "GateBoyLib/Probe.h"
@@ -55,7 +55,7 @@ struct GateBoyMem {
   void poweron() {
     memset(this, 0, sizeof(*this));
 
-    memcpy(bootrom, DMG_ROM_bin, 256);
+    memcpy(bootrom, get_DMG_ROM(), 256);
 
     // The first thing the bootrom does is clear VRAM, so put some recognizable
     // pattern in vram so we can see it running.
@@ -70,12 +70,12 @@ struct GateBoyMem {
   void reset() {
     memset(this, 0, sizeof(*this));
 
-    memcpy(bootrom, DMG_ROM_bin, 256);
-    memcpy(vid_ram, vram_boot, 8192);
+    memcpy(bootrom, get_DMG_ROM(), 256);
+    memcpy(vid_ram, get_vram_boot(), 8192);
     zero_ram[0x7A] = 0x39;
     zero_ram[0x7B] = 0x01;
     zero_ram[0x7C] = 0x2E;
-    memcpy(framebuffer, framebuffer_boot, 160*144);
+    memcpy(framebuffer, get_framebuffer_boot(), 160*144);
   }
 
   uint8_t  bootrom [256];

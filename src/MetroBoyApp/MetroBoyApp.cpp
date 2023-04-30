@@ -1,11 +1,12 @@
 #include "MetroBoyApp/MetroBoyApp.h"
 
-#include "AppLib/AppHost.h"
-#include "AudioLib/Audio.h"
-#include "AppLib/GLBase.h"
-//#include "CoreLib/Debug.h"
-#include "CoreLib/Log.h"
-#include "GameboyLib/Constants.h"
+#include "MetroLib/src/AppLib/AppHost.h"
+#include "MetroLib/src/AppLib/GLBase.h"
+#include "MetroLib/src/AudioLib/Audio.h"
+#include "MetroLib/src/CoreLib/Log.h"
+#include "MetroLib/src/GameboyLib/Constants.h"
+
+//#include "MetroLib/src/CoreLib/Debug.h"
 
 //-----------------------------------------------------------------------------
 
@@ -51,7 +52,7 @@ void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   ram_tex = create_texture_u8(256, 256, nullptr, false);
 
   gb_blitter.init();
-  dump_painter.init_hex();
+  dump_painter.init_hex_u8();
 
   //load_rom("tests/gb-test-roms/cpu_instrs/individual/01-special.gb");            // pass
   //load_rom("tests/gb-test-roms/cpu_instrs/individual/02-interrupts.gb");         // pass

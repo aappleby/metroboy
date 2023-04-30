@@ -1,6 +1,6 @@
-#include "CoreLib/File.h"
-#include "CoreLib/Tests.h"
-#include "CoreLib/Types.h"
+#include "MetroLib/src/CoreLib/File.h"
+#include "MetroLib/src/CoreLib/Tests.h"
+#include "MetroLib/src/CoreLib/Types.h"
 #include "MetroBoyLib/MetroBoy.h"
 
 #include <stdio.h>
@@ -98,16 +98,16 @@ TestResults run_microtest(std::string filename) {
     LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, phase);
     TEST_FAIL();
   }
-  else if (result_a == result_b) {
-    LOG_B("%-30s ", filename.c_str());
-    LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, phase);
-    TEST_PASS();
-  }
-  else {
+  else if (result_a != result_b) {
     LOG_B("%-30s ", filename.c_str());
     LOG_R("0x%02x 0x%02x 0x%02x FAIL @ %d\n", result_a, result_b, result_c, phase);
     TEST_FAIL();
   }
+
+  LOG_B("%-30s ", filename.c_str());
+  LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, phase);
+
+  TEST_DONE();
 }
 
 //------------------------------------------------------------------------------

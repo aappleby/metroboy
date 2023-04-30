@@ -116,7 +116,7 @@ int64_t GateBoyThread::get_steps() const {
 }
 
 void GateBoyThread::set_buttons(uint8_t buttons) {
-  set_buttons(buttons);
+  gb.top().set_buttons(buttons);
 }
 
 bool GateBoyThread::sim_paused() const {

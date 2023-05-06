@@ -1,4 +1,4 @@
-#include "MetroLib/src/GameboyLib/Assembler.h"
+#include "metrolib/gameboy/Assembler.h"
 #include "MetroBoyLib/MetroBoy.h"
 
 #include <string>

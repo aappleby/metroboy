@@ -1,5 +1,5 @@
 #include "MetroBoyLib/MetroBoy.h"
-#include "MetroLib/src/CoreLib/File.h"
+#include "metrolib/core/File.h"
 
 #pragma warning(disable : 4996)
 
@@ -194,7 +194,7 @@ void run_screenshot_tests() {
   /*
   double begin = timestamp();
 
-  std::string prefix = "tests/microtests/DMG/";
+  std::string prefix = "symlinks/GBMicrotests/bin/";
 
   printf("---------- Screenshot tests in %s: ----------\n", prefix.c_str());
 

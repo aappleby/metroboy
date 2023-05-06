@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 
-#include "MetroLib/src/CoreLib/Check.h"
-#include "MetroLib/src/CoreLib/Utils.h"
+#include "metrolib/core/Check.h"
+#include "metrolib/core/Utils.h"
 #include "GateBoyLib/GateBoyConfig.h"
 
 typedef const uint8_t wire;

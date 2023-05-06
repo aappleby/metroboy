@@ -1,8 +1,8 @@
 #include "MetroBoyLib/MetroBoy.h"
 
-#include "MetroLib/src/GameboyLib/Assembler.h"
-#include "MetroLib/src/GameboyLib/Constants.h"
-#include "MetroLib/src/CoreLib/Dumper.h"
+#include "metrolib/gameboy/Assembler.h"
+#include "metrolib/gameboy/GBConstants.h"
+#include "metrolib/core/Dumper.h"
 
 #include <assert.h>
 #include "imgui/imgui.h"

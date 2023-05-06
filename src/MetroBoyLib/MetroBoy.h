@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MetroLib/src/CoreLib/Types.h"
-#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "metrolib/core/Types.h"
+#include "metrolib/gameboy/MetroBoyCPU.h"
 
 #include "MetroBoyLib/MetroBoyBootrom.h"
 #include "MetroBoyLib/MetroBoyCart.h"
@@ -11,7 +11,7 @@
 #include "MetroBoyLib/MetroBoyOAM.h"
 #include "MetroBoyLib/MetroBoyPPU.h"
 #include "MetroBoyLib/MetroBoySerial.h"
-#include "MetroBoyLib/MetroBoySPU2.h"
+//#include "MetroBoyLib/MetroBoySPU2.h"
 #include "MetroBoyLib/MetroBoyTimer.h"
 #include "MetroBoyLib/MetroBoyVRAM.h"
 #include "MetroBoyLib/MetroBoyZRAM.h"
@@ -49,7 +49,7 @@ struct MetroBoy {
   MetroBoyJoypad  joy;
   MetroBoySerial  serial;
   MetroBoyPPU     ppu;
-  MetroBoySPU2    spu;
+  //MetroBoySPU2    spu;
   MetroBoyDMA     dma;
   MetroBoyBootrom boot;
   MetroBoyInterrupts ints;

@@ -1,7 +1,7 @@
 #pragma once
 #include "MetroBoyLib/MetroBoyOAM.h"
 #include "MetroBoyLib/MetroBoyVRAM.h"
-#include "MetroLib/src/CoreLib/Constants.h"
+#include "metrolib/core/Constants.h"
 
 struct LCD;
 

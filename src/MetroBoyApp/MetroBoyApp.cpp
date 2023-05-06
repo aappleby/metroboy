@@ -1,12 +1,12 @@
 #include "MetroBoyApp/MetroBoyApp.h"
 
-#include "MetroLib/src/AppLib/AppHost.h"
-#include "MetroLib/src/AppLib/GLBase.h"
-#include "MetroLib/src/AudioLib/Audio.h"
-#include "MetroLib/src/CoreLib/Log.h"
-#include "MetroLib/src/GameboyLib/Constants.h"
+#include "metrolib/appbase/AppHost.h"
+#include "metrolib/appbase/GLBase.h"
+#include "metrolib/audio/Audio.h"
+#include "metrolib/core/Log.h"
+#include "metrolib/gameboy/GBConstants.h"
 
-//#include "MetroLib/src/CoreLib/Debug.h"
+//#include "metrolib/core/Debug.h"
 
 //-----------------------------------------------------------------------------
 
@@ -67,12 +67,12 @@ void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   //load_rom("tests/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
   load_rom("tests/cpu_instrs.gb"); // pass
 
-  //load_rom("tests/microtests/DMG/timer_int_halt_a.gb");
-  //load_rom("tests/microtests/DMG/halt_bug.gb");
-  //load_rom("tests/microtests/DMG/hblank_int_if_a.gb");
-  //load_rom("tests/microtests/DMG/hblank_int_if_b.gb");
-  //load_rom("tests/microtests/DMG/int_hblank_halt_scx1.gb");
-  //load_rom("tests/microtests/DMG/flood_vram.gb");
+  //load_rom("symlinks/GBMicrotests/bin/timer_int_halt_a.gb");
+  //load_rom("symlinks/GBMicrotests/bin/halt_bug.gb");
+  //load_rom("symlinks/GBMicrotests/bin/hblank_int_if_a.gb");
+  //load_rom("symlinks/GBMicrotests/bin/hblank_int_if_b.gb");
+  //load_rom("symlinks/GBMicrotests/bin/int_hblank_halt_scx1.gb");
+  //load_rom("symlinks/GBMicrotests/bin/flood_vram.gb");
 
   //runmode = RUN_FAST;
 };
@@ -321,7 +321,7 @@ void MetroBoyApp::app_render_ui(dvec2 screen_size, double delta) {
   }
 
   if (1) {
-    gb->spu.dump(d);
+    //gb->spu.dump(d);
     gb->zram.dump(d);
     gb->oam.dump(d);
     text_painter.render_string(view, screen_size, d.s, (float)column, 0);

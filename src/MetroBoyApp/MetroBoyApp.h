@@ -2,15 +2,15 @@
 
 #include "MetroBoyLib/MetroBoy.h"
 
-#include "MetroLib/src/CoreLib/StateStack.h"
-#include "MetroLib/src/CoreLib/File.h"
-#include "MetroLib/src/AppLib/App.h"
-#include "MetroLib/src/AppLib/GridPainter.h"
-#include "MetroLib/src/GameboyLib/GBBlitter.h"
-#include "MetroLib/src/AppLib/DumpPainter.h"
-#include "MetroLib/src/AppLib/Blitter.h"
-#include "MetroLib/src/AppLib/GridPainter.h"
-#include "MetroLib/src/AppLib/TextPainter.h"
+#include "metrolib/core/StateStack.h"
+#include "metrolib/core/File.h"
+#include "metrolib/appbase/App.h"
+#include "metrolib/appbase/GridPainter.h"
+#include "metrolib/gameboy/GBBlitter.h"
+#include "metrolib/appbase/DumpPainter.h"
+#include "metrolib/appbase/Blitter.h"
+#include "metrolib/appbase/GridPainter.h"
+#include "metrolib/appbase/TextPainter.h"
 
 #include <string>
 

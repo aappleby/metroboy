@@ -1,5 +1,5 @@
 #pragma once
-#include "MetroLib/src/AudioLib/Audio.h"
+#include "metrolib/audio/Audio.h"
 
 struct SpuChannel2;
 sample_t ch2_audio_out(const SpuChannel2& ch2);

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "MetroLib/src/AppLib/Viewport.h"
+#include "metrolib/appbase/Viewport.h"
 #include "Plait/CellDB.h"
 #include "glm/glm/glm.hpp"
 #include "json/single_include/nlohmann/json.hpp"
-#include "MetroLib/src/CoreLib/Utils.h"
+#include "metrolib/core/Utils.h"
 
 #include <vector>
 #include <iostream>

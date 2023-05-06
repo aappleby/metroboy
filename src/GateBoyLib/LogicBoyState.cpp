@@ -2,8 +2,8 @@
 
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/Utils.h"
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/GameboyLib/Constants.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/gameboy/GBConstants.h"
 
 #include <cstring>
 

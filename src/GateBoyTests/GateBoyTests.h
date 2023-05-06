@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
-#include "MetroLib/src/CoreLib/File.h"
-#include "MetroLib/src/CoreLib/Tests.h"
+#include "metrolib/core/File.h"
+#include "metrolib/core/Tests.h"
 #include "GateBoyLib/GateBoyPair.h"
 #include <memory>
 

@@ -1,7 +1,7 @@
 #include "Plait/CellDB.h"
-#include "MetroLib/src/CoreLib/Dumper.h"
-#include "MetroLib/src/CoreLib/Log.h"
-#include "MetroLib/src/CoreLib/Utils.h"
+#include "metrolib/core/Dumper.h"
+#include "metrolib/core/Log.h"
+#include "metrolib/core/Utils.h"
 #include "Plait/PTree.h"
 
 #include <map>

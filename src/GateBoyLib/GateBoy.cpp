@@ -2,10 +2,10 @@
 #include <memory.h>
 #include <stdio.h>
 
-#include "MetroLib/src/AudioLib/Audio.h"
-#include "MetroLib/src/GameboyLib/Constants.h"
-#include "MetroLib/src/CoreLib/Tests.h"
-#include "MetroLib/src/CoreLib/Result.h"
+#include "metrolib/audio/Audio.h"
+#include "metrolib/gameboy/GBConstants.h"
+#include "metrolib/core/Tests.h"
+#include "metrolib/core/Result.h"
 
 #include "GateBoyLib/Probe.h"
 #include "GateBoyLib/GateBoyState.h"

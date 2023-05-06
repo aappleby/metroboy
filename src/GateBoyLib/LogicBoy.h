@@ -4,10 +4,10 @@
 #include "GateBoyLib/IGateBoy.h"
 #include "GateBoyLib/LogicBoyState.h"
 #include "GateBoyLib/Utils.h"
-#include "MetroLib/src/AudioLib/Audio.h"
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/CoreLib/Result.h"
-#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "metrolib/audio/Audio.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/core/Result.h"
+#include "metrolib/gameboy/MetroBoyCPU.h"
 
 sample_t ch1_audio_out_fast(const SpuChannel1& ch3);
 sample_t ch2_audio_out_fast(const SpuChannel2& ch3);

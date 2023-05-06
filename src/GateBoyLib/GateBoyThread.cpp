@@ -2,8 +2,8 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/CoreLib/Log.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/core/Log.h"
 
 #include <iostream>
 #include <chrono>

@@ -1,12 +1,12 @@
 #include "GateBoyTests/GateBoyTests.h"
 
-#include "MetroLib/src/GameboyLib/Assembler.h"
+#include "metrolib/gameboy/Assembler.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/Utils.h"
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/CoreLib/Tests.h"
-#include "MetroLib/src/CoreLib/File.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/core/Tests.h"
+#include "metrolib/core/File.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -49,8 +49,8 @@ int main(int argc, char** argv) {
 
     LOG_B("========== GateBoy tests ==========\n");
     const auto proto = make_unique<GateBoy>();
-    results += a.test_reset   (proto.get(), 0xFF);
-    results += a.test_generic         (proto.get());
+    results << a.test_reset   (proto.get(), 0xFF);
+    results << a.test_generic         (proto.get());
     LOG_B("\n");
 
     LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
@@ -74,8 +74,8 @@ int main(int argc, char** argv) {
     GateBoyTests t;
 
     const auto proto = make_unique<LogicBoy>();
-    results += t.test_reset(proto.get(), 0x01); // OK
-    results += t.test_generic(proto.get());
+    results << t.test_reset(proto.get(), 0x01); // OK
+    results << t.test_generic(proto.get());
 
     LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
     LOG_R("%s: %6d check fail\n", __FUNCTION__, results.check_fail);
@@ -99,8 +99,8 @@ int main(int argc, char** argv) {
     GateBoyTests t;
 
     const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
-    results += t.test_reset(proto.get(), 0x01); // OK
-    results += t.test_generic(proto.get());
+    results << t.test_reset(proto.get(), 0x01); // OK
+    results << t.test_generic(proto.get());
 
     LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
     LOG_R("%s: %6d check fail\n", __FUNCTION__, results.check_fail);
@@ -129,32 +129,32 @@ int main(int argc, char** argv) {
     const int reps = 100;
 
     /*
-    results += t.test_fuzz_reg(proto.get(), ADDR_LCDC, reps); // hey this actually found some mismatches
+    results << t.test_fuzz_reg(proto.get(), ADDR_LCDC, reps); // hey this actually found some mismatches
 
-    results += t.test_fuzz_reg(proto.get(), ADDR_P1  , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_SB  , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_SC  , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_DIV , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_TIMA, reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_TMA , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_TAC , reps);
-    //results += t.test_fuzz_reg(proto.get(), ADDR_IF  , reps); // FIXME DONOTCHECKIN
-    results += t.test_fuzz_reg(proto.get(), ADDR_STAT, reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_SCY , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_SCX , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_LY  , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_LYC , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_DMA , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_BGP , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_OBP0, reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_OBP1, reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_WY  , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_WX  , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_IE  , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_P1  , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_SB  , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_SC  , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_DIV , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_TIMA, reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_TMA , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_TAC , reps);
+    //results << t.test_fuzz_reg(proto.get(), ADDR_IF  , reps); // FIXME DONOTCHECKIN
+    results << t.test_fuzz_reg(proto.get(), ADDR_STAT, reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_SCY , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_SCX , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_LY  , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_LYC , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_DMA , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_BGP , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_OBP0, reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_OBP1, reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_WY  , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_WX  , reps);
+    results << t.test_fuzz_reg(proto.get(), ADDR_IE  , reps);
     */
 
-    //results += t.test_fuzz_reg2(proto.get(), reps * 10);
-    results += t.test_fuzz_spu(proto.get(), reps * 10);
+    //results << t.test_fuzz_reg2(proto.get(), reps * 10);
+    results << t.test_fuzz_spu(proto.get(), reps * 10);
 
     LOG_G("%s: %6d check pass\n", __FUNCTION__, results.check_pass);
     LOG_R("%s: %6d check fail\n", __FUNCTION__, results.check_fail);
@@ -196,7 +196,7 @@ TestResults GateBoyTests::test_regression_cart(const char* filename, int cycles)
 
   for (int i = 0; i < cycles; i++) {
     if (i && (i % 1000000) == 0) LOG_G("Phase %d\n", i);
-    if (gb->next_phase(cart_blob).is_err()) TEST_FAIL();
+    ASSERT_EQ(false, gb->next_phase(cart_blob).is_err());
   }
 
   TEST_DONE();
@@ -221,7 +221,7 @@ TestResults GateBoyTests::test_regression_dump(const char* filename, int cycles)
 
   for (int i = 0; i < cycles; i++) {
     if (i && (i % 1000000) == 0) LOG_G("Phase %d\n", i);
-    if (gb->next_phase(cart_blob).is_err()) TEST_FAIL();
+    ASSERT_EQ(false, gb->next_phase(cart_blob).is_err());
   }
 
   TEST_DONE();
@@ -232,45 +232,45 @@ TestResults GateBoyTests::test_regression_dump(const char* filename, int cycles)
 TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += test_first_op(proto);
-  //results += test_bootrom(proto);
-  results += test_clk(proto);
-  results += test_regs(proto);
-  results += test_spu_regs(proto);
-  results += test_dma(proto);
+  results << test_first_op(proto);
+  //results << test_bootrom(proto);
+  results << test_clk(proto);
+  results << test_regs(proto);
+  results << test_spu_regs(proto);
+  results << test_dma(proto);
 
-  results += test_mem(proto);
+  results << test_mem(proto);
 
   // Ext bus test only passes if flags are on and we're using the driven/pulled falgs
   if ((proto->get_flags().unwrap() & (BIT_DRIVEN | BIT_PULLED)) == (BIT_DRIVEN | BIT_PULLED)) {
-    results += test_ext_bus(proto);
+    results << test_ext_bus(proto);
   }
 
-  results += test_micro_poweron(proto);
-  results += test_micro_lcden(proto);
-  results += test_micro_timer(proto);
+  results << test_micro_poweron(proto);
+  results << test_micro_lcden(proto);
+  results << test_micro_timer(proto);
 
   if (run_slow_tests) {
-    results += test_micro_int_vblank(proto);
+    results << test_micro_int_vblank(proto);
   }
 
-  results += test_micro_int_stat(proto);
-  results += test_micro_int_timer(proto);
-  results += test_micro_int_serial(proto);
-  results += test_micro_int_joypad(proto);
-  results += test_micro_lock_oam(proto);
-  results += test_micro_lock_vram(proto);
-  results += test_micro_window(proto);
-  results += test_micro_ppu(proto);
-  results += test_micro_dma(proto);
-  results += test_micro_mbc1(proto);
+  results << test_micro_int_stat(proto);
+  results << test_micro_int_timer(proto);
+  results << test_micro_int_serial(proto);
+  results << test_micro_int_joypad(proto);
+  results << test_micro_lock_oam(proto);
+  results << test_micro_lock_vram(proto);
+  results << test_micro_window(proto);
+  results << test_micro_ppu(proto);
+  results << test_micro_dma(proto);
+  results << test_micro_mbc1(proto);
 
 #if 0
   verbose = true;
-  results += test_mooneye_generic(); // some failing
-  results += test_mooneye_mbc1();    // pass
-  results += test_mooneye_timer();   // pass
-  results += test_mooneye_ppu();     // 3 fails
+  results << test_mooneye_generic(); // some failing
+  results << test_mooneye_mbc1();    // pass
+  results << test_mooneye_timer();   // pass
+  results << test_mooneye_ppu();     // 3 fails
 #endif
 
   TEST_DONE();
@@ -292,16 +292,14 @@ TestResults GateBoyTests::test_fuzz_reg(const IGateBoy* proto, uint16_t addr, in
       if ((r % 100) >= 90) {
         auto res = gb->dbg_write(dummy_cart, addr, uint8_t(xorshift32(r)));
         if (res.is_err()) {
-          LOG_R("\ntest_fuzz_reg failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, uint8_t(r), addr);
-          //TEST_FAIL();
+          TEST_FAIL("test_fuzz_reg failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, uint8_t(r), addr);
           break;
         }
       }
       else {
         auto res = gb->dbg_read(dummy_cart, addr);
         if (res.is_err()) {
-          LOG_R("\ntest_fuzz_reg failed at %04d:%04d - read 0x%04x\n", j, i, addr);
-          //TEST_FAIL();
+          TEST_FAIL("test_fuzz_reg failed at %04d:%04d - read 0x%04x\n", j, i, addr);
           break;
         }
       }
@@ -380,11 +378,10 @@ TestResults GateBoyTests::test_fuzz_reg2(const IGateBoy* proto, int reps) {
       for (int phase = 0; phase < 8; phase++) {
         auto res1 = gb->next_phase(dummy_cart);
         if (res1.is_err()) {
-          LOG_R("\ntest_fuzz_reg failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
           LOG_R("Saving dump before mismatch...\n");
           save_fuzz_dump(proto, j, i);
           LOG_R("Dump saved @ %04d:%04d\n", j, i);
-          TEST_FAIL();
+          TEST_FAIL("test_fuzz_reg failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
         }
       }
     }
@@ -444,16 +441,15 @@ TestResults GateBoyTests::test_fuzz_spu(const IGateBoy* proto, int reps) {
       for (int phase = 0; phase < 8; phase++) {
         auto res1 = gb->next_phase(dummy_cart);
         if (res1.is_err()) {
-          if (write) {
-            LOG_R("\test_fuzz_spu failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
-          }
-          else {
-            LOG_R("\test_fuzz_spu failed at %04d:%04d - read 0x%04x\n", j, i, addr);
-          }
           LOG_R("Saving dump before mismatch...\n");
           save_fuzz_dump(proto, j, i);
           LOG_R("Dump saved @ %04d:%04d\n", j, i);
-          TEST_FAIL();
+          if (write) {
+            TEST_FAIL("test_fuzz_spu failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
+          }
+          else {
+            TEST_FAIL("test_fuzz_spu failed at %04d:%04d - read 0x%04x\n", j, i, addr);
+          }
         }
       }
     }
@@ -511,26 +507,26 @@ TestResults GateBoyTests::test_spu_reg(const IGateBoy* proto, const char* tag, u
 TestResults GateBoyTests::test_regs(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += test_reg(proto, "P1",   ADDR_P1,   0b00110000);
-  //results += test_reg(proto, "SB",   ADDR_SB,   0b11111111);
-  //results += test_reg(proto, "SC",   ADDR_SC,   0b10000001);
-  results += test_reg(proto, "TIMA", ADDR_TIMA, 0b11111111);
-  results += test_reg(proto, "TMA",  ADDR_TMA,  0b11111111);
-  results += test_reg(proto, "TAC",  ADDR_TAC,  0b00000111);
-  results += test_reg(proto, "IF",   ADDR_IF,   0b00011111);
-  results += test_reg(proto, "LCDC", ADDR_LCDC, 0b11111111);
-  results += test_reg(proto, "STAT", ADDR_STAT, 0b01111000);
-  results += test_reg(proto, "SCY",  ADDR_SCY,  0b11111111);
-  results += test_reg(proto, "SCX",  ADDR_SCX,  0b11111111);
-  //results += test_reg(proto, "LY",   ADDR_LY,   177); not writable
-  results += test_reg(proto, "LYC",  ADDR_LYC,  0b11111111);
-  results += test_reg(proto, "DMA",  ADDR_DMA,  0b11111111);
-  results += test_reg(proto, "BGP",  ADDR_BGP,  0b11111111);
-  results += test_reg(proto, "OBP0", ADDR_OBP0, 0b11111111);
-  results += test_reg(proto, "OBP1", ADDR_OBP1, 0b11111111);
-  results += test_reg(proto, "WY",   ADDR_WY,   0b11111111);
-  results += test_reg(proto, "WX",   ADDR_WX,   0b11111111);
-  results += test_reg(proto, "IE",   ADDR_IE,   0b00011111);
+  results << test_reg(proto, "P1",   ADDR_P1,   0b00110000);
+  //results << test_reg(proto, "SB",   ADDR_SB,   0b11111111);
+  //results << test_reg(proto, "SC",   ADDR_SC,   0b10000001);
+  results << test_reg(proto, "TIMA", ADDR_TIMA, 0b11111111);
+  results << test_reg(proto, "TMA",  ADDR_TMA,  0b11111111);
+  results << test_reg(proto, "TAC",  ADDR_TAC,  0b00000111);
+  results << test_reg(proto, "IF",   ADDR_IF,   0b00011111);
+  results << test_reg(proto, "LCDC", ADDR_LCDC, 0b11111111);
+  results << test_reg(proto, "STAT", ADDR_STAT, 0b01111000);
+  results << test_reg(proto, "SCY",  ADDR_SCY,  0b11111111);
+  results << test_reg(proto, "SCX",  ADDR_SCX,  0b11111111);
+  //results << test_reg(proto, "LY",   ADDR_LY,   177); not writable
+  results << test_reg(proto, "LYC",  ADDR_LYC,  0b11111111);
+  results << test_reg(proto, "DMA",  ADDR_DMA,  0b11111111);
+  results << test_reg(proto, "BGP",  ADDR_BGP,  0b11111111);
+  results << test_reg(proto, "OBP0", ADDR_OBP0, 0b11111111);
+  results << test_reg(proto, "OBP1", ADDR_OBP1, 0b11111111);
+  results << test_reg(proto, "WY",   ADDR_WY,   0b11111111);
+  results << test_reg(proto, "WX",   ADDR_WX,   0b11111111);
+  results << test_reg(proto, "IE",   ADDR_IE,   0b00011111);
 
   TEST_DONE();
 }
@@ -540,32 +536,32 @@ TestResults GateBoyTests::test_spu_regs(const IGateBoy* proto) {
 
 #ifdef TEST_AUDIO
 
-  results += test_spu_reg(proto, "NR50", ADDR_NR50, 0b11111111);
-  results += test_spu_reg(proto, "NR51", ADDR_NR51, 0b11111111);
+  results << test_spu_reg(proto, "NR50", ADDR_NR50, 0b11111111);
+  results << test_spu_reg(proto, "NR51", ADDR_NR51, 0b11111111);
   // since this controls power to the whole sound section, we have to test it as a regular reg
-  results += test_reg(proto, "NR52", ADDR_NR52, 0b10000000);
+  results << test_reg(proto, "NR52", ADDR_NR52, 0b10000000);
 
-  results += test_spu_reg(proto, "NR10", ADDR_NR10, 0b01111111);
-  results += test_spu_reg(proto, "NR11", ADDR_NR11, 0b11000000);
-  results += test_spu_reg(proto, "NR12", ADDR_NR12, 0b11111111);
-  results += test_spu_reg(proto, "NR13", ADDR_NR13, 0b00000000); // NR13 can't be read but we'll try anyway
-  results += test_spu_reg(proto, "NR14", ADDR_NR14, 0b01000000);
+  results << test_spu_reg(proto, "NR10", ADDR_NR10, 0b01111111);
+  results << test_spu_reg(proto, "NR11", ADDR_NR11, 0b11000000);
+  results << test_spu_reg(proto, "NR12", ADDR_NR12, 0b11111111);
+  results << test_spu_reg(proto, "NR13", ADDR_NR13, 0b00000000); // NR13 can't be read but we'll try anyway
+  results << test_spu_reg(proto, "NR14", ADDR_NR14, 0b01000000);
 
-  results += test_spu_reg(proto, "NR21", ADDR_NR21, 0b11000000);
-  results += test_spu_reg(proto, "NR22", ADDR_NR22, 0b11111111);
-  results += test_spu_reg(proto, "NR23", ADDR_NR23, 0b00000000); // NR23 can't be read but we'll try anyway
-  results += test_spu_reg(proto, "NR24", ADDR_NR24, 0b01000000);
+  results << test_spu_reg(proto, "NR21", ADDR_NR21, 0b11000000);
+  results << test_spu_reg(proto, "NR22", ADDR_NR22, 0b11111111);
+  results << test_spu_reg(proto, "NR23", ADDR_NR23, 0b00000000); // NR23 can't be read but we'll try anyway
+  results << test_spu_reg(proto, "NR24", ADDR_NR24, 0b01000000);
 
-  results += test_spu_reg(proto, "NR30", ADDR_NR30, 0b10000000);
-  results += test_spu_reg(proto, "NR31", ADDR_NR31, 0b00000000); // NR31 can't be read but we'll try anyway
-  results += test_spu_reg(proto, "NR32", ADDR_NR32, 0b01100000);
-  results += test_spu_reg(proto, "NR33", ADDR_NR33, 0b00000000); // NR33 can't be read but we'll try anyway
-  results += test_spu_reg(proto, "NR34", ADDR_NR34, 0b01000000);
+  results << test_spu_reg(proto, "NR30", ADDR_NR30, 0b10000000);
+  results << test_spu_reg(proto, "NR31", ADDR_NR31, 0b00000000); // NR31 can't be read but we'll try anyway
+  results << test_spu_reg(proto, "NR32", ADDR_NR32, 0b01100000);
+  results << test_spu_reg(proto, "NR33", ADDR_NR33, 0b00000000); // NR33 can't be read but we'll try anyway
+  results << test_spu_reg(proto, "NR34", ADDR_NR34, 0b01000000);
 
-  results += test_spu_reg(proto, "NR41", ADDR_NR41, 0b00000000); // NR41 can't be read but we'll try anyway
-  results += test_spu_reg(proto, "NR42", ADDR_NR42, 0b11111111);
-  results += test_spu_reg(proto, "NR43", ADDR_NR43, 0b11111111);
-  results += test_spu_reg(proto, "NR44", ADDR_NR44, 0b01000000);
+  results << test_spu_reg(proto, "NR41", ADDR_NR41, 0b00000000); // NR41 can't be read but we'll try anyway
+  results << test_spu_reg(proto, "NR42", ADDR_NR42, 0b11111111);
+  results << test_spu_reg(proto, "NR43", ADDR_NR43, 0b11111111);
+  results << test_spu_reg(proto, "NR44", ADDR_NR44, 0b01000000);
 
 #endif
 
@@ -577,17 +573,17 @@ TestResults GateBoyTests::test_spu_regs(const IGateBoy* proto) {
 TestResults GateBoyTests::diff_gb(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask) {
   TEST_INIT();
   bool pass = true;
-  LOG_G("State:\n")
+  LOG_G("State:\n");
   pass &= bit_cmp(gb1->get_state(), gb2->get_state(), mask, GateBoyState::fields);
-  LOG_G("CPU:\n")
+  LOG_G("CPU:\n");
   pass &= bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask, GateBoyCpu::fields);
-  LOG_G("Mem:\n")
+  LOG_G("Mem:\n");
   pass &= bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask);
-  LOG_G("Sys:\n")
+  LOG_G("Sys:\n");
   pass &= bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask);
-  LOG_G("Pins:\n")
+  LOG_G("Pins:\n");
   pass &= bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask);
-  EXPECT_EQ(true, pass, "diff fail");
+  EXPECT_EQ(true, pass, "GateBoyTests::diff_gb fail");
 
   TEST_DONE();
 }
@@ -618,7 +614,7 @@ TestResults GateBoyTests::test_reset(const IGateBoy* /*proto*/, uint8_t mask) {
   gb2->reset();
   LOG_G("reset() done\n");
 
-  results += diff_gb(gb1, gb2, mask);
+  results << diff_gb(gb1, gb2, mask);
 
   TEST_DONE();
 }
@@ -630,57 +626,57 @@ TestResults GateBoyTests::test_micro_poweron(const IGateBoy* proto) {
 
   LOG_B("===== Stat boot state =====\n");
 
-  results += run_microtest(proto, "poweron_stat_000.gb");
-  results += run_microtest(proto, "poweron_stat_005.gb");
-  results += run_microtest(proto, "poweron_stat_006.gb"); // probably due to unstable data latch
-  results += run_microtest(proto, "poweron_stat_007.gb");
-  results += run_microtest(proto, "poweron_stat_026.gb");
-  results += run_microtest(proto, "poweron_stat_027.gb");
-  results += run_microtest(proto, "poweron_stat_069.gb");
-  results += run_microtest(proto, "poweron_stat_070.gb");
-  results += run_microtest(proto, "poweron_stat_119.gb");
-  results += run_microtest(proto, "poweron_stat_120.gb"); // failing
-  results += run_microtest(proto, "poweron_stat_121.gb");
-  results += run_microtest(proto, "poweron_stat_140.gb");
-  results += run_microtest(proto, "poweron_stat_141.gb");
-  results += run_microtest(proto, "poweron_stat_183.gb");
-  results += run_microtest(proto, "poweron_stat_184.gb");
-  results += run_microtest(proto, "poweron_stat_234.gb");
+  results << run_microtest(proto, "poweron_stat_000.gb");
+  results << run_microtest(proto, "poweron_stat_005.gb");
+  results << run_microtest(proto, "poweron_stat_006.gb"); // probably due to unstable data latch
+  results << run_microtest(proto, "poweron_stat_007.gb");
+  results << run_microtest(proto, "poweron_stat_026.gb");
+  results << run_microtest(proto, "poweron_stat_027.gb");
+  results << run_microtest(proto, "poweron_stat_069.gb");
+  results << run_microtest(proto, "poweron_stat_070.gb");
+  results << run_microtest(proto, "poweron_stat_119.gb");
+  results << run_microtest(proto, "poweron_stat_120.gb"); // failing
+  results << run_microtest(proto, "poweron_stat_121.gb");
+  results << run_microtest(proto, "poweron_stat_140.gb");
+  results << run_microtest(proto, "poweron_stat_141.gb");
+  results << run_microtest(proto, "poweron_stat_183.gb");
+  results << run_microtest(proto, "poweron_stat_184.gb");
+  results << run_microtest(proto, "poweron_stat_234.gb");
 
-  results += run_microtest(proto, "poweron_stat_235.gb");
+  results << run_microtest(proto, "poweron_stat_235.gb");
 
   LOG_B("===== Div state =====\n");
 
-  results += run_microtest(proto, "poweron_div_000.gb");
-  results += run_microtest(proto, "poweron_div_004.gb");
-  results += run_microtest(proto, "poweron_div_005.gb");
+  results << run_microtest(proto, "poweron_div_000.gb");
+  results << run_microtest(proto, "poweron_div_004.gb");
+  results << run_microtest(proto, "poweron_div_005.gb");
 
   LOG_B("===== LY boot state =====\n");
 
-  results += run_microtest(proto, "poweron_ly_000.gb");
-  results += run_microtest(proto, "poweron_ly_119.gb");
-  results += run_microtest(proto, "poweron_ly_120.gb");
-  results += run_microtest(proto, "poweron_ly_233.gb");
-  results += run_microtest(proto, "poweron_ly_234.gb");
+  results << run_microtest(proto, "poweron_ly_000.gb");
+  results << run_microtest(proto, "poweron_ly_119.gb");
+  results << run_microtest(proto, "poweron_ly_120.gb");
+  results << run_microtest(proto, "poweron_ly_233.gb");
+  results << run_microtest(proto, "poweron_ly_234.gb");
 
   LOG_B("===== Other reg initial values =====\n");
-  results += run_microtest(proto, "poweron_bgp_000.gb");
-  results += run_microtest(proto, "poweron_dma_000.gb");
-  results += run_microtest(proto, "poweron_if_000.gb");
-  results += run_microtest(proto, "poweron_joy_000.gb");
-  results += run_microtest(proto, "poweron_lcdc_000.gb");
-  results += run_microtest(proto, "poweron_lyc_000.gb");
-  results += run_microtest(proto, "poweron_obp0_000.gb");
-  results += run_microtest(proto, "poweron_obp1_000.gb");
-  //results += run_microtest(proto, "poweron_sb_000.gb");
-  //results += run_microtest(proto, "poweron_sc_000.gb");
-  results += run_microtest(proto, "poweron_scx_000.gb");
-  results += run_microtest(proto, "poweron_scy_000.gb");
-  results += run_microtest(proto, "poweron_tac_000.gb");
-  results += run_microtest(proto, "poweron_tima_000.gb");
-  results += run_microtest(proto, "poweron_tma_000.gb");
-  results += run_microtest(proto, "poweron_wx_000.gb");
-  results += run_microtest(proto, "poweron_wy_000.gb");
+  results << run_microtest(proto, "poweron_bgp_000.gb");
+  results << run_microtest(proto, "poweron_dma_000.gb");
+  results << run_microtest(proto, "poweron_if_000.gb");
+  results << run_microtest(proto, "poweron_joy_000.gb");
+  results << run_microtest(proto, "poweron_lcdc_000.gb");
+  results << run_microtest(proto, "poweron_lyc_000.gb");
+  results << run_microtest(proto, "poweron_obp0_000.gb");
+  results << run_microtest(proto, "poweron_obp1_000.gb");
+  //results << run_microtest(proto, "poweron_sb_000.gb");
+  //results << run_microtest(proto, "poweron_sc_000.gb");
+  results << run_microtest(proto, "poweron_scx_000.gb");
+  results << run_microtest(proto, "poweron_scy_000.gb");
+  results << run_microtest(proto, "poweron_tac_000.gb");
+  results << run_microtest(proto, "poweron_tima_000.gb");
+  results << run_microtest(proto, "poweron_tma_000.gb");
+  results << run_microtest(proto, "poweron_wx_000.gb");
+  results << run_microtest(proto, "poweron_wy_000.gb");
 
   TEST_DONE();
 }
@@ -690,10 +686,10 @@ TestResults GateBoyTests::test_micro_poweron(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_int_vblank(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "lcdon_halt_to_vblank_int_a.gb", true);
-  results += run_microtest(proto, "lcdon_halt_to_vblank_int_b.gb", true);
-  results += run_microtest(proto, "lcdon_nops_to_vblank_int_a.gb", true);
-  results += run_microtest(proto, "lcdon_nops_to_vblank_int_b.gb", true);
+  results << run_microtest(proto, "lcdon_halt_to_vblank_int_a.gb", true);
+  results << run_microtest(proto, "lcdon_halt_to_vblank_int_b.gb", true);
+  results << run_microtest(proto, "lcdon_nops_to_vblank_int_a.gb", true);
+  results << run_microtest(proto, "lcdon_nops_to_vblank_int_b.gb", true);
 
   TEST_DONE();
 }
@@ -703,181 +699,181 @@ TestResults GateBoyTests::test_micro_int_vblank(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_int_stat(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "int_hblank_halt_scx0.gb"); // int fires on 822 G
-  results += run_microtest(proto, "int_hblank_halt_scx1.gb"); // int fires on 824 A
-  results += run_microtest(proto, "int_hblank_halt_scx2.gb"); // int fires on 826 C
-  results += run_microtest(proto, "int_hblank_halt_scx3.gb"); // int fires on 828 E
-  results += run_microtest(proto, "int_hblank_halt_scx4.gb"); // int fires on 830 G
-  results += run_microtest(proto, "int_hblank_halt_scx5.gb"); // int fires on 832 A
-  results += run_microtest(proto, "int_hblank_halt_scx6.gb"); // int fires on 834 C
-  results += run_microtest(proto, "int_hblank_halt_scx7.gb"); // int fires on 836 E
+  results << run_microtest(proto, "int_hblank_halt_scx0.gb"); // int fires on 822 G
+  results << run_microtest(proto, "int_hblank_halt_scx1.gb"); // int fires on 824 A
+  results << run_microtest(proto, "int_hblank_halt_scx2.gb"); // int fires on 826 C
+  results << run_microtest(proto, "int_hblank_halt_scx3.gb"); // int fires on 828 E
+  results << run_microtest(proto, "int_hblank_halt_scx4.gb"); // int fires on 830 G
+  results << run_microtest(proto, "int_hblank_halt_scx5.gb"); // int fires on 832 A
+  results << run_microtest(proto, "int_hblank_halt_scx6.gb"); // int fires on 834 C
+  results << run_microtest(proto, "int_hblank_halt_scx7.gb"); // int fires on 836 E
 
-  results += run_microtest(proto, "int_hblank_incs_scx0.gb"); // int fires on 822 G
-  results += run_microtest(proto, "int_hblank_incs_scx1.gb"); // int fires on 824 A
-  results += run_microtest(proto, "int_hblank_incs_scx2.gb"); // int fires on 826 C
-  results += run_microtest(proto, "int_hblank_incs_scx3.gb"); // int fires on 828 E
-  results += run_microtest(proto, "int_hblank_incs_scx4.gb"); // int fires on 830 G
-  results += run_microtest(proto, "int_hblank_incs_scx5.gb"); // int fires on 832 A
-  results += run_microtest(proto, "int_hblank_incs_scx6.gb"); // int fires on 834 C
-  results += run_microtest(proto, "int_hblank_incs_scx7.gb"); // int fires on 836 E
+  results << run_microtest(proto, "int_hblank_incs_scx0.gb"); // int fires on 822 G
+  results << run_microtest(proto, "int_hblank_incs_scx1.gb"); // int fires on 824 A
+  results << run_microtest(proto, "int_hblank_incs_scx2.gb"); // int fires on 826 C
+  results << run_microtest(proto, "int_hblank_incs_scx3.gb"); // int fires on 828 E
+  results << run_microtest(proto, "int_hblank_incs_scx4.gb"); // int fires on 830 G
+  results << run_microtest(proto, "int_hblank_incs_scx5.gb"); // int fires on 832 A
+  results << run_microtest(proto, "int_hblank_incs_scx6.gb"); // int fires on 834 C
+  results << run_microtest(proto, "int_hblank_incs_scx7.gb"); // int fires on 836 E
 
-  results += run_microtest(proto, "int_hblank_nops_scx0.gb"); // int fires on 822 G
-  results += run_microtest(proto, "int_hblank_nops_scx1.gb"); // int fires on 824 A
-  results += run_microtest(proto, "int_hblank_nops_scx2.gb"); // int fires on 826 C
-  results += run_microtest(proto, "int_hblank_nops_scx3.gb"); // int fires on 828 E
-  results += run_microtest(proto, "int_hblank_nops_scx4.gb"); // int fires on 830 G
-  results += run_microtest(proto, "int_hblank_nops_scx5.gb"); // int fires on 832 A
-  results += run_microtest(proto, "int_hblank_nops_scx6.gb"); // int fires on 834 C
-  results += run_microtest(proto, "int_hblank_nops_scx7.gb"); // int fires on 836 E
+  results << run_microtest(proto, "int_hblank_nops_scx0.gb"); // int fires on 822 G
+  results << run_microtest(proto, "int_hblank_nops_scx1.gb"); // int fires on 824 A
+  results << run_microtest(proto, "int_hblank_nops_scx2.gb"); // int fires on 826 C
+  results << run_microtest(proto, "int_hblank_nops_scx3.gb"); // int fires on 828 E
+  results << run_microtest(proto, "int_hblank_nops_scx4.gb"); // int fires on 830 G
+  results << run_microtest(proto, "int_hblank_nops_scx5.gb"); // int fires on 832 A
+  results << run_microtest(proto, "int_hblank_nops_scx6.gb"); // int fires on 834 C
+  results << run_microtest(proto, "int_hblank_nops_scx7.gb"); // int fires on 836 E
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "int_vblank1_halt.gb", true); // int fires on 131602 C
-    results += run_microtest(proto, "int_vblank1_incs.gb", true);
-    results += run_microtest(proto, "int_vblank1_nops.gb", true);
+    results << run_microtest(proto, "int_vblank1_halt.gb", true); // int fires on 131602 C
+    results << run_microtest(proto, "int_vblank1_incs.gb", true);
+    results << run_microtest(proto, "int_vblank1_nops.gb", true);
 
-    results += run_microtest(proto, "int_vblank2_halt.gb", true); // int fires on 131562 C
-    results += run_microtest(proto, "int_vblank2_incs.gb", true);
-    results += run_microtest(proto, "int_vblank2_nops.gb", true);
+    results << run_microtest(proto, "int_vblank2_halt.gb", true); // int fires on 131562 C
+    results << run_microtest(proto, "int_vblank2_incs.gb", true);
+    results << run_microtest(proto, "int_vblank2_nops.gb", true);
   }
 
-  results += run_microtest(proto, "int_lyc_halt.gb"); // int fires on 1226 C
-  results += run_microtest(proto, "int_lyc_incs.gb");
-  results += run_microtest(proto, "int_lyc_nops.gb");
+  results << run_microtest(proto, "int_lyc_halt.gb"); // int fires on 1226 C
+  results << run_microtest(proto, "int_lyc_incs.gb");
+  results << run_microtest(proto, "int_lyc_nops.gb");
 
-  results += run_microtest(proto, "int_oam_halt.gb"); // int fires on 1182 G
-  results += run_microtest(proto, "int_oam_incs.gb");
-  results += run_microtest(proto, "int_oam_nops.gb");
+  results << run_microtest(proto, "int_oam_halt.gb"); // int fires on 1182 G
+  results << run_microtest(proto, "int_oam_incs.gb");
+  results << run_microtest(proto, "int_oam_nops.gb");
 
   // broken and slow
   if (run_slow_tests) {
-    results += run_microtest(proto, "int_hblank_halt_bug_a.gb", true);
-    results += run_microtest(proto, "int_hblank_halt_bug_b.gb", true); // failing
+    results << run_microtest(proto, "int_hblank_halt_bug_a.gb", true);
+    results << run_microtest(proto, "int_hblank_halt_bug_b.gb", true); // failing
   }
 
-  results += run_microtest(proto, "hblank_int_if_a.gb");
-  results += run_microtest(proto, "hblank_int_if_b.gb");
+  results << run_microtest(proto, "hblank_int_if_a.gb");
+  results << run_microtest(proto, "hblank_int_if_b.gb");
 
-  results += run_microtest(proto, "hblank_int_scx0_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx0_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx0_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx0_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx0_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx0_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx0_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx0_if_d.gb");
 
-  results += run_microtest(proto, "hblank_int_scx1_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx1_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx1_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx1_if_d.gb");
-  results += run_microtest(proto, "hblank_int_scx1_nops_a.gb");
-  results += run_microtest(proto, "hblank_int_scx1_nops_b.gb");
+  results << run_microtest(proto, "hblank_int_scx1_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx1_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx1_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx1_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx1_nops_a.gb");
+  results << run_microtest(proto, "hblank_int_scx1_nops_b.gb");
 
-  results += run_microtest(proto, "hblank_int_scx2_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx2_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx2_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx2_if_d.gb");
-  results += run_microtest(proto, "hblank_int_scx2_nops_a.gb");
-  results += run_microtest(proto, "hblank_int_scx2_nops_b.gb");
+  results << run_microtest(proto, "hblank_int_scx2_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx2_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx2_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx2_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx2_nops_a.gb");
+  results << run_microtest(proto, "hblank_int_scx2_nops_b.gb");
 
-  results += run_microtest(proto, "hblank_int_scx3_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx3_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx3_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx3_if_d.gb");
-  results += run_microtest(proto, "hblank_int_scx3_nops_a.gb");
-  results += run_microtest(proto, "hblank_int_scx3_nops_b.gb");
+  results << run_microtest(proto, "hblank_int_scx3_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx3_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx3_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx3_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx3_nops_a.gb");
+  results << run_microtest(proto, "hblank_int_scx3_nops_b.gb");
 
-  results += run_microtest(proto, "hblank_int_scx4_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx4_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx4_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx4_if_d.gb");
-  results += run_microtest(proto, "hblank_int_scx4_nops_a.gb");
-  results += run_microtest(proto, "hblank_int_scx4_nops_b.gb");
+  results << run_microtest(proto, "hblank_int_scx4_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx4_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx4_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx4_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx4_nops_a.gb");
+  results << run_microtest(proto, "hblank_int_scx4_nops_b.gb");
 
-  results += run_microtest(proto, "hblank_int_scx5_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx5_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx5_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx5_if_d.gb");
-  results += run_microtest(proto, "hblank_int_scx5_nops_a.gb");
-  results += run_microtest(proto, "hblank_int_scx5_nops_b.gb");
+  results << run_microtest(proto, "hblank_int_scx5_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx5_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx5_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx5_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx5_nops_a.gb");
+  results << run_microtest(proto, "hblank_int_scx5_nops_b.gb");
 
-  results += run_microtest(proto, "hblank_int_scx6_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx6_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx6_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx6_if_d.gb");
-  results += run_microtest(proto, "hblank_int_scx6_nops_a.gb");
-  results += run_microtest(proto, "hblank_int_scx6_nops_b.gb");
+  results << run_microtest(proto, "hblank_int_scx6_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx6_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx6_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx6_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx6_nops_a.gb");
+  results << run_microtest(proto, "hblank_int_scx6_nops_b.gb");
 
-  results += run_microtest(proto, "hblank_int_scx7_if_a.gb");
-  results += run_microtest(proto, "hblank_int_scx7_if_b.gb");
-  results += run_microtest(proto, "hblank_int_scx7_if_c.gb");
-  results += run_microtest(proto, "hblank_int_scx7_if_d.gb");
-  results += run_microtest(proto, "hblank_int_scx7_nops_a.gb");
-  results += run_microtest(proto, "hblank_int_scx7_nops_b.gb");
+  results << run_microtest(proto, "hblank_int_scx7_if_a.gb");
+  results << run_microtest(proto, "hblank_int_scx7_if_b.gb");
+  results << run_microtest(proto, "hblank_int_scx7_if_c.gb");
+  results << run_microtest(proto, "hblank_int_scx7_if_d.gb");
+  results << run_microtest(proto, "hblank_int_scx7_nops_a.gb");
+  results << run_microtest(proto, "hblank_int_scx7_nops_b.gb");
 
-  results += run_microtest(proto, "int_hblank_halt_scx0.gb");
-  results += run_microtest(proto, "int_hblank_halt_scx1.gb");
-  results += run_microtest(proto, "int_hblank_halt_scx2.gb");
-  results += run_microtest(proto, "int_hblank_halt_scx3.gb");
-  results += run_microtest(proto, "int_hblank_halt_scx4.gb");
-  results += run_microtest(proto, "int_hblank_halt_scx5.gb");
-  results += run_microtest(proto, "int_hblank_halt_scx6.gb");
-  results += run_microtest(proto, "int_hblank_halt_scx7.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx0.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx1.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx2.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx3.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx4.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx5.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx6.gb");
+  results << run_microtest(proto, "int_hblank_halt_scx7.gb");
 
-  results += run_microtest(proto, "int_hblank_incs_scx0.gb");
-  results += run_microtest(proto, "int_hblank_incs_scx1.gb");
-  results += run_microtest(proto, "int_hblank_incs_scx2.gb");
-  results += run_microtest(proto, "int_hblank_incs_scx3.gb");
-  results += run_microtest(proto, "int_hblank_incs_scx4.gb");
-  results += run_microtest(proto, "int_hblank_incs_scx5.gb");
-  results += run_microtest(proto, "int_hblank_incs_scx6.gb");
-  results += run_microtest(proto, "int_hblank_incs_scx7.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx0.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx1.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx2.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx3.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx4.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx5.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx6.gb");
+  results << run_microtest(proto, "int_hblank_incs_scx7.gb");
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "vblank2_int_if_a.gb", true);
-    results += run_microtest(proto, "vblank2_int_if_b.gb", true);
-    results += run_microtest(proto, "vblank2_int_if_c.gb", true);
-    results += run_microtest(proto, "vblank2_int_if_d.gb", true);
-    results += run_microtest(proto, "vblank2_int_inc_sled.gb", true);
-    results += run_microtest(proto, "vblank2_int_nops_a.gb", true);
-    results += run_microtest(proto, "vblank2_int_nops_b.gb", true);
+    results << run_microtest(proto, "vblank2_int_if_a.gb", true);
+    results << run_microtest(proto, "vblank2_int_if_b.gb", true);
+    results << run_microtest(proto, "vblank2_int_if_c.gb", true);
+    results << run_microtest(proto, "vblank2_int_if_d.gb", true);
+    results << run_microtest(proto, "vblank2_int_inc_sled.gb", true);
+    results << run_microtest(proto, "vblank2_int_nops_a.gb", true);
+    results << run_microtest(proto, "vblank2_int_nops_b.gb", true);
 
-    results += run_microtest(proto, "vblank_int_if_a.gb", true);
-    results += run_microtest(proto, "vblank_int_if_b.gb", true);
-    results += run_microtest(proto, "vblank_int_if_c.gb", true);
-    results += run_microtest(proto, "vblank_int_if_d.gb", true);
-    results += run_microtest(proto, "vblank_int_inc_sled.gb", true);
-    results += run_microtest(proto, "vblank_int_nops_a.gb", true);
-    results += run_microtest(proto, "vblank_int_nops_b.gb", true);
+    results << run_microtest(proto, "vblank_int_if_a.gb", true);
+    results << run_microtest(proto, "vblank_int_if_b.gb", true);
+    results << run_microtest(proto, "vblank_int_if_c.gb", true);
+    results << run_microtest(proto, "vblank_int_if_d.gb", true);
+    results << run_microtest(proto, "vblank_int_inc_sled.gb", true);
+    results << run_microtest(proto, "vblank_int_nops_a.gb", true);
+    results << run_microtest(proto, "vblank_int_nops_b.gb", true);
   }
 
-  results += run_microtest(proto, "lcdon_to_oam_int_l0.gb");
-  results += run_microtest(proto, "lcdon_to_oam_int_l1.gb");
-  results += run_microtest(proto, "lcdon_to_oam_int_l2.gb");
+  results << run_microtest(proto, "lcdon_to_oam_int_l0.gb");
+  results << run_microtest(proto, "lcdon_to_oam_int_l1.gb");
+  results << run_microtest(proto, "lcdon_to_oam_int_l2.gb");
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "line_144_oam_int_a.gb", true); // pass
-    results += run_microtest(proto, "line_144_oam_int_b.gb", true); // pass
-    results += run_microtest(proto, "line_144_oam_int_c.gb", true); // pass
-    results += run_microtest(proto, "line_144_oam_int_d.gb", true); // pass
+    results << run_microtest(proto, "line_144_oam_int_a.gb", true); // pass
+    results << run_microtest(proto, "line_144_oam_int_b.gb", true); // pass
+    results << run_microtest(proto, "line_144_oam_int_c.gb", true); // pass
+    results << run_microtest(proto, "line_144_oam_int_d.gb", true); // pass
   }
 
-  results += run_microtest(proto, "oam_int_if_edge_a.gb"); // pass
-  results += run_microtest(proto, "oam_int_if_edge_b.gb"); // pass
-  results += run_microtest(proto, "oam_int_if_edge_c.gb"); // pass
-  results += run_microtest(proto, "oam_int_if_edge_d.gb"); // pass
-  results += run_microtest(proto, "oam_int_if_level_c.gb"); // pass
-  results += run_microtest(proto, "oam_int_if_level_d.gb"); // pass
-  results += run_microtest(proto, "oam_int_inc_sled.gb"); // pass
-  results += run_microtest(proto, "oam_int_nops_a.gb"); // pass
-  results += run_microtest(proto, "oam_int_nops_b.gb"); // pass
+  results << run_microtest(proto, "oam_int_if_edge_a.gb"); // pass
+  results << run_microtest(proto, "oam_int_if_edge_b.gb"); // pass
+  results << run_microtest(proto, "oam_int_if_edge_c.gb"); // pass
+  results << run_microtest(proto, "oam_int_if_edge_d.gb"); // pass
+  results << run_microtest(proto, "oam_int_if_level_c.gb"); // pass
+  results << run_microtest(proto, "oam_int_if_level_d.gb"); // pass
+  results << run_microtest(proto, "oam_int_inc_sled.gb"); // pass
+  results << run_microtest(proto, "oam_int_nops_a.gb"); // pass
+  results << run_microtest(proto, "oam_int_nops_b.gb"); // pass
 
-  results += run_microtest(proto, "lcdon_to_lyc1_int.gb");
-  results += run_microtest(proto, "lcdon_to_lyc2_int.gb");
-  results += run_microtest(proto, "lcdon_to_lyc3_int.gb");
+  results << run_microtest(proto, "lcdon_to_lyc1_int.gb");
+  results << run_microtest(proto, "lcdon_to_lyc2_int.gb");
+  results << run_microtest(proto, "lcdon_to_lyc3_int.gb");
 
-  results += run_microtest(proto, "lyc1_int_if_edge_a.gb");  // pass
-  results += run_microtest(proto, "lyc1_int_if_edge_b.gb");  // pass
-  results += run_microtest(proto, "lyc1_int_if_edge_c.gb");  // pass
-  results += run_microtest(proto, "lyc1_int_if_edge_d.gb");  // pass
-  results += run_microtest(proto, "lyc1_int_nops_a.gb");     // pass
-  results += run_microtest(proto, "lyc1_int_nops_b.gb");     // pass
+  results << run_microtest(proto, "lyc1_int_if_edge_a.gb");  // pass
+  results << run_microtest(proto, "lyc1_int_if_edge_b.gb");  // pass
+  results << run_microtest(proto, "lyc1_int_if_edge_c.gb");  // pass
+  results << run_microtest(proto, "lyc1_int_if_edge_d.gb");  // pass
+  results << run_microtest(proto, "lyc1_int_nops_a.gb");     // pass
+  results << run_microtest(proto, "lyc1_int_nops_b.gb");     // pass
 
   TEST_DONE();
 }
@@ -886,13 +882,13 @@ TestResults GateBoyTests::test_micro_int_stat(const IGateBoy* proto) {
 
 TestResults GateBoyTests::test_micro_int_timer(const IGateBoy* proto) {
   TEST_INIT();
-  results += run_microtest(proto, "int_timer_halt.gb"); // int fires on 296 A
-  results += run_microtest(proto, "int_timer_halt_div_a.gb");
-  results += run_microtest(proto, "int_timer_halt_div_b.gb");
-  results += run_microtest(proto, "int_timer_incs.gb");
-  results += run_microtest(proto, "int_timer_nops.gb");
-  results += run_microtest(proto, "int_timer_nops_div_a.gb");
-  results += run_microtest(proto, "int_timer_nops_div_b.gb");
+  results << run_microtest(proto, "int_timer_halt.gb"); // int fires on 296 A
+  results << run_microtest(proto, "int_timer_halt_div_a.gb");
+  results << run_microtest(proto, "int_timer_halt_div_b.gb");
+  results << run_microtest(proto, "int_timer_incs.gb");
+  results << run_microtest(proto, "int_timer_nops.gb");
+  results << run_microtest(proto, "int_timer_nops_div_a.gb");
+  results << run_microtest(proto, "int_timer_nops_div_b.gb");
   TEST_DONE();
 }
 
@@ -915,34 +911,34 @@ TestResults GateBoyTests::test_micro_int_joypad(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_lcden(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "lcdon_to_ly1_a.gb");
-  results += run_microtest(proto, "lcdon_to_ly1_b.gb");
-  results += run_microtest(proto, "lcdon_to_ly2_a.gb");
-  results += run_microtest(proto, "lcdon_to_ly2_b.gb");
-  results += run_microtest(proto, "lcdon_to_ly3_a.gb");
-  results += run_microtest(proto, "lcdon_to_ly3_b.gb");
+  results << run_microtest(proto, "lcdon_to_ly1_a.gb");
+  results << run_microtest(proto, "lcdon_to_ly1_b.gb");
+  results << run_microtest(proto, "lcdon_to_ly2_a.gb");
+  results << run_microtest(proto, "lcdon_to_ly2_b.gb");
+  results << run_microtest(proto, "lcdon_to_ly3_a.gb");
+  results << run_microtest(proto, "lcdon_to_ly3_b.gb");
 
-  results += run_microtest(proto, "lcdon_to_stat0_a.gb");
-  results += run_microtest(proto, "lcdon_to_stat0_b.gb");
-  results += run_microtest(proto, "lcdon_to_stat0_c.gb");
-  results += run_microtest(proto, "lcdon_to_stat0_d.gb");
+  results << run_microtest(proto, "lcdon_to_stat0_a.gb");
+  results << run_microtest(proto, "lcdon_to_stat0_b.gb");
+  results << run_microtest(proto, "lcdon_to_stat0_c.gb");
+  results << run_microtest(proto, "lcdon_to_stat0_d.gb");
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "lcdon_to_stat1_a.gb", true);
-    results += run_microtest(proto, "lcdon_to_stat1_b.gb", true);
-    results += run_microtest(proto, "lcdon_to_stat1_c.gb", true);
-    results += run_microtest(proto, "lcdon_to_stat1_d.gb", true); // failing
-    results += run_microtest(proto, "lcdon_to_stat1_e.gb", true);
+    results << run_microtest(proto, "lcdon_to_stat1_a.gb", true);
+    results << run_microtest(proto, "lcdon_to_stat1_b.gb", true);
+    results << run_microtest(proto, "lcdon_to_stat1_c.gb", true);
+    results << run_microtest(proto, "lcdon_to_stat1_d.gb", true); // failing
+    results << run_microtest(proto, "lcdon_to_stat1_e.gb", true);
   }
 
-  results += run_microtest(proto, "lcdon_to_stat2_a.gb"); // failing
-  results += run_microtest(proto, "lcdon_to_stat2_b.gb");
-  results += run_microtest(proto, "lcdon_to_stat2_c.gb");
-  results += run_microtest(proto, "lcdon_to_stat2_d.gb");
-  results += run_microtest(proto, "lcdon_to_stat3_a.gb");
-  results += run_microtest(proto, "lcdon_to_stat3_b.gb");
-  results += run_microtest(proto, "lcdon_to_stat3_c.gb");
-  results += run_microtest(proto, "lcdon_to_stat3_d.gb");
+  results << run_microtest(proto, "lcdon_to_stat2_a.gb"); // failing
+  results << run_microtest(proto, "lcdon_to_stat2_b.gb");
+  results << run_microtest(proto, "lcdon_to_stat2_c.gb");
+  results << run_microtest(proto, "lcdon_to_stat2_d.gb");
+  results << run_microtest(proto, "lcdon_to_stat3_a.gb");
+  results << run_microtest(proto, "lcdon_to_stat3_b.gb");
+  results << run_microtest(proto, "lcdon_to_stat3_c.gb");
+  results << run_microtest(proto, "lcdon_to_stat3_d.gb");
 
   TEST_DONE();
 }
@@ -952,11 +948,11 @@ TestResults GateBoyTests::test_micro_lcden(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_dma(const IGateBoy* proto) {
   TEST_INIT();
   LOG_B("===== DMA =====\n");
-  results += run_microtest(proto, "dma_0x1000.gb");
-  results += run_microtest(proto, "dma_0x9000.gb");
-  results += run_microtest(proto, "dma_0xA000.gb");
-  results += run_microtest(proto, "dma_0xC000.gb");
-  results += run_microtest(proto, "dma_0xE000.gb");
+  results << run_microtest(proto, "dma_0x1000.gb");
+  results << run_microtest(proto, "dma_0x9000.gb");
+  results << run_microtest(proto, "dma_0xA000.gb");
+  results << run_microtest(proto, "dma_0xC000.gb");
+  results << run_microtest(proto, "dma_0xE000.gb");
   TEST_DONE();
 }
 
@@ -965,48 +961,48 @@ TestResults GateBoyTests::test_micro_dma(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_lock_oam(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "oam_read_l0_a.gb");
-  results += run_microtest(proto, "oam_read_l0_b.gb");
-  results += run_microtest(proto, "oam_read_l0_c.gb");
-  results += run_microtest(proto, "oam_read_l0_d.gb"); // failing
-  results += run_microtest(proto, "oam_read_l1_a.gb"); // failing
-  results += run_microtest(proto, "oam_read_l1_b.gb");
-  results += run_microtest(proto, "oam_read_l1_c.gb");
-  results += run_microtest(proto, "oam_read_l1_d.gb");
-  results += run_microtest(proto, "oam_read_l1_e.gb");
-  results += run_microtest(proto, "oam_read_l1_f.gb"); // failing
+  results << run_microtest(proto, "oam_read_l0_a.gb");
+  results << run_microtest(proto, "oam_read_l0_b.gb");
+  results << run_microtest(proto, "oam_read_l0_c.gb");
+  results << run_microtest(proto, "oam_read_l0_d.gb"); // failing
+  results << run_microtest(proto, "oam_read_l1_a.gb"); // failing
+  results << run_microtest(proto, "oam_read_l1_b.gb");
+  results << run_microtest(proto, "oam_read_l1_c.gb");
+  results << run_microtest(proto, "oam_read_l1_d.gb");
+  results << run_microtest(proto, "oam_read_l1_e.gb");
+  results << run_microtest(proto, "oam_read_l1_f.gb"); // failing
 
-  results += run_microtest(proto, "oam_write_l0_a.gb");
-  results += run_microtest(proto, "oam_write_l0_b.gb");
-  results += run_microtest(proto, "oam_write_l0_c.gb");
-  results += run_microtest(proto, "oam_write_l0_d.gb"); // failing
-  results += run_microtest(proto, "oam_write_l0_e.gb");
+  results << run_microtest(proto, "oam_write_l0_a.gb");
+  results << run_microtest(proto, "oam_write_l0_b.gb");
+  results << run_microtest(proto, "oam_write_l0_c.gb");
+  results << run_microtest(proto, "oam_write_l0_d.gb"); // failing
+  results << run_microtest(proto, "oam_write_l0_e.gb");
 
-  results += run_microtest(proto, "oam_write_l1_a.gb");
-  results += run_microtest(proto, "oam_write_l1_b.gb");
-  results += run_microtest(proto, "oam_write_l1_c.gb"); // failing
-  results += run_microtest(proto, "oam_write_l1_d.gb");
-  results += run_microtest(proto, "oam_write_l1_e.gb");
-  results += run_microtest(proto, "oam_write_l1_f.gb");
+  results << run_microtest(proto, "oam_write_l1_a.gb");
+  results << run_microtest(proto, "oam_write_l1_b.gb");
+  results << run_microtest(proto, "oam_write_l1_c.gb"); // failing
+  results << run_microtest(proto, "oam_write_l1_d.gb");
+  results << run_microtest(proto, "oam_write_l1_e.gb");
+  results << run_microtest(proto, "oam_write_l1_f.gb");
 
-  results += run_microtest(proto, "lcdon_to_oam_unlock_a.gb");
-  results += run_microtest(proto, "lcdon_to_oam_unlock_b.gb");
-  results += run_microtest(proto, "lcdon_to_oam_unlock_c.gb");
-  results += run_microtest(proto, "lcdon_to_oam_unlock_d.gb"); // failing
+  results << run_microtest(proto, "lcdon_to_oam_unlock_a.gb");
+  results << run_microtest(proto, "lcdon_to_oam_unlock_b.gb");
+  results << run_microtest(proto, "lcdon_to_oam_unlock_c.gb");
+  results << run_microtest(proto, "lcdon_to_oam_unlock_d.gb"); // failing
 
-  results += run_microtest(proto, "poweron_oam_000.gb");
-  results += run_microtest(proto, "poweron_oam_005.gb");
-  results += run_microtest(proto, "poweron_oam_006.gb"); // fail, this is in the gap between hblank and scan
-  results += run_microtest(proto, "poweron_oam_069.gb");
-  results += run_microtest(proto, "poweron_oam_070.gb");
-  results += run_microtest(proto, "poweron_oam_119.gb");
-  results += run_microtest(proto, "poweron_oam_120.gb"); // fail, this is in the gap between hblank and scan
-  results += run_microtest(proto, "poweron_oam_121.gb");
-  results += run_microtest(proto, "poweron_oam_183.gb");
-  results += run_microtest(proto, "poweron_oam_184.gb");
-  results += run_microtest(proto, "poweron_oam_233.gb");
-  results += run_microtest(proto, "poweron_oam_234.gb"); // fail, this is in the gap between hblank and scan
-  results += run_microtest(proto, "poweron_oam_235.gb");
+  results << run_microtest(proto, "poweron_oam_000.gb");
+  results << run_microtest(proto, "poweron_oam_005.gb");
+  results << run_microtest(proto, "poweron_oam_006.gb"); // fail, this is in the gap between hblank and scan
+  results << run_microtest(proto, "poweron_oam_069.gb");
+  results << run_microtest(proto, "poweron_oam_070.gb");
+  results << run_microtest(proto, "poweron_oam_119.gb");
+  results << run_microtest(proto, "poweron_oam_120.gb"); // fail, this is in the gap between hblank and scan
+  results << run_microtest(proto, "poweron_oam_121.gb");
+  results << run_microtest(proto, "poweron_oam_183.gb");
+  results << run_microtest(proto, "poweron_oam_184.gb");
+  results << run_microtest(proto, "poweron_oam_233.gb");
+  results << run_microtest(proto, "poweron_oam_234.gb"); // fail, this is in the gap between hblank and scan
+  results << run_microtest(proto, "poweron_oam_235.gb");
 
   TEST_DONE();
 }
@@ -1016,15 +1012,15 @@ TestResults GateBoyTests::test_micro_lock_oam(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_lock_vram(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "poweron_vram_000.gb");
-  results += run_microtest(proto, "poweron_vram_025.gb");
-  results += run_microtest(proto, "poweron_vram_026.gb"); // fail, this is in the gap between scan and render
-  results += run_microtest(proto, "poweron_vram_069.gb");
-  results += run_microtest(proto, "poweron_vram_070.gb");
-  results += run_microtest(proto, "poweron_vram_139.gb");
-  results += run_microtest(proto, "poweron_vram_140.gb"); // fail, this is in the gap between scan and render
-  results += run_microtest(proto, "poweron_vram_183.gb");
-  results += run_microtest(proto, "poweron_vram_184.gb");
+  results << run_microtest(proto, "poweron_vram_000.gb");
+  results << run_microtest(proto, "poweron_vram_025.gb");
+  results << run_microtest(proto, "poweron_vram_026.gb"); // fail, this is in the gap between scan and render
+  results << run_microtest(proto, "poweron_vram_069.gb");
+  results << run_microtest(proto, "poweron_vram_070.gb");
+  results << run_microtest(proto, "poweron_vram_139.gb");
+  results << run_microtest(proto, "poweron_vram_140.gb"); // fail, this is in the gap between scan and render
+  results << run_microtest(proto, "poweron_vram_183.gb");
+  results << run_microtest(proto, "poweron_vram_184.gb");
 
   TEST_DONE();
 }
@@ -1034,53 +1030,53 @@ TestResults GateBoyTests::test_micro_lock_vram(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_timer(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "timer_tima_inc_256k_a.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_b.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_c.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_d.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_e.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_f.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_g.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_h.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_i.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_j.gb");
-  results += run_microtest(proto, "timer_tima_inc_256k_k.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_a.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_b.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_c.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_d.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_e.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_f.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_g.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_h.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_i.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_j.gb");
+  results << run_microtest(proto, "timer_tima_inc_256k_k.gb");
 
-  results += run_microtest(proto, "timer_tima_reload_256k_a.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_b.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_c.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_d.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_e.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_f.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_g.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_h.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_i.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_j.gb");
-  results += run_microtest(proto, "timer_tima_reload_256k_k.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_a.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_b.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_c.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_d.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_e.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_f.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_g.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_h.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_i.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_j.gb");
+  results << run_microtest(proto, "timer_tima_reload_256k_k.gb");
 
-  results += run_microtest(proto, "timer_tima_phase_a.gb");
-  results += run_microtest(proto, "timer_tima_phase_b.gb");
-  results += run_microtest(proto, "timer_tima_phase_c.gb");
-  results += run_microtest(proto, "timer_tima_phase_d.gb");
-  results += run_microtest(proto, "timer_tima_phase_e.gb");
-  results += run_microtest(proto, "timer_tima_phase_f.gb");
-  results += run_microtest(proto, "timer_tima_phase_g.gb");
-  results += run_microtest(proto, "timer_tima_phase_h.gb");
-  results += run_microtest(proto, "timer_tima_phase_i.gb");
-  results += run_microtest(proto, "timer_tima_phase_j.gb");
+  results << run_microtest(proto, "timer_tima_phase_a.gb");
+  results << run_microtest(proto, "timer_tima_phase_b.gb");
+  results << run_microtest(proto, "timer_tima_phase_c.gb");
+  results << run_microtest(proto, "timer_tima_phase_d.gb");
+  results << run_microtest(proto, "timer_tima_phase_e.gb");
+  results << run_microtest(proto, "timer_tima_phase_f.gb");
+  results << run_microtest(proto, "timer_tima_phase_g.gb");
+  results << run_microtest(proto, "timer_tima_phase_h.gb");
+  results << run_microtest(proto, "timer_tima_phase_i.gb");
+  results << run_microtest(proto, "timer_tima_phase_j.gb");
 
-  results += run_microtest(proto, "timer_tima_write_a.gb");
-  results += run_microtest(proto, "timer_tima_write_b.gb");
-  results += run_microtest(proto, "timer_tima_write_c.gb");
-  results += run_microtest(proto, "timer_tima_write_d.gb");
-  results += run_microtest(proto, "timer_tima_write_e.gb");
-  results += run_microtest(proto, "timer_tima_write_f.gb");
+  results << run_microtest(proto, "timer_tima_write_a.gb");
+  results << run_microtest(proto, "timer_tima_write_b.gb");
+  results << run_microtest(proto, "timer_tima_write_c.gb");
+  results << run_microtest(proto, "timer_tima_write_d.gb");
+  results << run_microtest(proto, "timer_tima_write_e.gb");
+  results << run_microtest(proto, "timer_tima_write_f.gb");
 
-  results += run_microtest(proto, "timer_div_phase_c.gb");
-  results += run_microtest(proto, "timer_div_phase_d.gb");
+  results << run_microtest(proto, "timer_div_phase_c.gb");
+  results << run_microtest(proto, "timer_div_phase_d.gb");
 
-  results += run_microtest(proto, "timer_tma_write_a.gb");
-  results += run_microtest(proto, "timer_tma_write_b.gb");
+  results << run_microtest(proto, "timer_tma_write_a.gb");
+  results << run_microtest(proto, "timer_tma_write_b.gb");
 
   TEST_DONE();
 }
@@ -1091,58 +1087,58 @@ TestResults GateBoyTests::test_micro_ppu(const IGateBoy* proto) {
   TEST_INIT();
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "line_153_ly_a.gb", true);
-    results += run_microtest(proto, "line_153_ly_b.gb", true);
-    results += run_microtest(proto, "line_153_ly_c.gb", true);
-    results += run_microtest(proto, "line_153_ly_d.gb", true);
-    results += run_microtest(proto, "line_153_ly_e.gb", true);
-    results += run_microtest(proto, "line_153_ly_f.gb", true);
-    results += run_microtest(proto, "line_153_lyc0_int_inc_sled.gb", true);  // failing
+    results << run_microtest(proto, "line_153_ly_a.gb", true);
+    results << run_microtest(proto, "line_153_ly_b.gb", true);
+    results << run_microtest(proto, "line_153_ly_c.gb", true);
+    results << run_microtest(proto, "line_153_ly_d.gb", true);
+    results << run_microtest(proto, "line_153_ly_e.gb", true);
+    results << run_microtest(proto, "line_153_ly_f.gb", true);
+    results << run_microtest(proto, "line_153_lyc0_int_inc_sled.gb", true);  // failing
   }
 
-  results += run_microtest(proto, "lyc1_write_timing_a.gb");
-  results += run_microtest(proto, "lyc1_write_timing_b.gb");
-  results += run_microtest(proto, "lyc1_write_timing_c.gb");
-  results += run_microtest(proto, "lyc1_write_timing_d.gb");
+  results << run_microtest(proto, "lyc1_write_timing_a.gb");
+  results << run_microtest(proto, "lyc1_write_timing_b.gb");
+  results << run_microtest(proto, "lyc1_write_timing_c.gb");
+  results << run_microtest(proto, "lyc1_write_timing_d.gb");
 
-  results += run_microtest(proto, "stat_write_glitch_l0_a.gb"); // failing
-  results += run_microtest(proto, "stat_write_glitch_l0_b.gb"); // failing
-  results += run_microtest(proto, "stat_write_glitch_l0_c.gb");
-  results += run_microtest(proto, "stat_write_glitch_l1_a.gb");
-  results += run_microtest(proto, "stat_write_glitch_l1_b.gb"); // failing
-  results += run_microtest(proto, "stat_write_glitch_l1_c.gb"); // failing
-  results += run_microtest(proto, "stat_write_glitch_l1_d.gb");
+  results << run_microtest(proto, "stat_write_glitch_l0_a.gb"); // failing
+  results << run_microtest(proto, "stat_write_glitch_l0_b.gb"); // failing
+  results << run_microtest(proto, "stat_write_glitch_l0_c.gb");
+  results << run_microtest(proto, "stat_write_glitch_l1_a.gb");
+  results << run_microtest(proto, "stat_write_glitch_l1_b.gb"); // failing
+  results << run_microtest(proto, "stat_write_glitch_l1_c.gb"); // failing
+  results << run_microtest(proto, "stat_write_glitch_l1_d.gb");
 
-  results += run_microtest(proto, "ppu_sprite0_scx0_b.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx2_a.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx2_b.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx3_a.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx3_b.gb"); // failing
-  results += run_microtest(proto, "ppu_sprite0_scx4_a.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx4_b.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx5_a.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx5_b.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx6_a.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx6_b.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx7_a.gb");
-  results += run_microtest(proto, "ppu_sprite0_scx7_b.gb"); // failing
+  results << run_microtest(proto, "ppu_sprite0_scx0_b.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx2_a.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx2_b.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx3_a.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx3_b.gb"); // failing
+  results << run_microtest(proto, "ppu_sprite0_scx4_a.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx4_b.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx5_a.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx5_b.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx6_a.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx6_b.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx7_a.gb");
+  results << run_microtest(proto, "ppu_sprite0_scx7_b.gb"); // failing
 
-  results += run_microtest(proto, "sprite4_0_a.gb");
-  results += run_microtest(proto, "sprite4_0_b.gb");
-  results += run_microtest(proto, "sprite4_1_a.gb");
-  results += run_microtest(proto, "sprite4_1_b.gb");
-  results += run_microtest(proto, "sprite4_2_a.gb");
-  results += run_microtest(proto, "sprite4_2_b.gb");
-  results += run_microtest(proto, "sprite4_3_a.gb");
-  results += run_microtest(proto, "sprite4_3_b.gb");
-  results += run_microtest(proto, "sprite4_4_a.gb");
-  results += run_microtest(proto, "sprite4_4_b.gb");
-  results += run_microtest(proto, "sprite4_5_a.gb");
-  results += run_microtest(proto, "sprite4_5_b.gb");
-  results += run_microtest(proto, "sprite4_6_a.gb");
-  results += run_microtest(proto, "sprite4_6_b.gb");
-  results += run_microtest(proto, "sprite4_7_a.gb");
-  results += run_microtest(proto, "sprite4_7_b.gb");
+  results << run_microtest(proto, "sprite4_0_a.gb");
+  results << run_microtest(proto, "sprite4_0_b.gb");
+  results << run_microtest(proto, "sprite4_1_a.gb");
+  results << run_microtest(proto, "sprite4_1_b.gb");
+  results << run_microtest(proto, "sprite4_2_a.gb");
+  results << run_microtest(proto, "sprite4_2_b.gb");
+  results << run_microtest(proto, "sprite4_3_a.gb");
+  results << run_microtest(proto, "sprite4_3_b.gb");
+  results << run_microtest(proto, "sprite4_4_a.gb");
+  results << run_microtest(proto, "sprite4_4_b.gb");
+  results << run_microtest(proto, "sprite4_5_a.gb");
+  results << run_microtest(proto, "sprite4_5_b.gb");
+  results << run_microtest(proto, "sprite4_6_a.gb");
+  results << run_microtest(proto, "sprite4_6_b.gb");
+  results << run_microtest(proto, "sprite4_7_a.gb");
+  results << run_microtest(proto, "sprite4_7_b.gb");
 
   TEST_DONE();
 }
@@ -1152,44 +1148,44 @@ TestResults GateBoyTests::test_micro_ppu(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_window(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "win0_scx3_a.gb");
-  results += run_microtest(proto, "win0_scx3_b.gb");
-  results += run_microtest(proto, "win10_scx3_a.gb");
-  results += run_microtest(proto, "win10_scx3_b.gb");
+  results << run_microtest(proto, "win0_scx3_a.gb");
+  results << run_microtest(proto, "win0_scx3_b.gb");
+  results << run_microtest(proto, "win10_scx3_a.gb");
+  results << run_microtest(proto, "win10_scx3_b.gb");
 
-  results += run_microtest(proto, "win0_a.gb");
-  results += run_microtest(proto, "win0_b.gb");
-  results += run_microtest(proto, "win1_a.gb");
-  results += run_microtest(proto, "win1_b.gb");
-  results += run_microtest(proto, "win2_a.gb");
-  results += run_microtest(proto, "win2_b.gb");
-  results += run_microtest(proto, "win3_a.gb");
-  results += run_microtest(proto, "win3_b.gb");
-  results += run_microtest(proto, "win4_a.gb");
-  results += run_microtest(proto, "win4_b.gb");
-  results += run_microtest(proto, "win5_a.gb");
-  results += run_microtest(proto, "win5_b.gb");
-  results += run_microtest(proto, "win6_a.gb");
-  results += run_microtest(proto, "win6_b.gb");
-  results += run_microtest(proto, "win7_a.gb");
-  results += run_microtest(proto, "win7_b.gb");
-  results += run_microtest(proto, "win8_a.gb");
-  results += run_microtest(proto, "win8_b.gb");
-  results += run_microtest(proto, "win9_a.gb");
-  results += run_microtest(proto, "win9_b.gb");
+  results << run_microtest(proto, "win0_a.gb");
+  results << run_microtest(proto, "win0_b.gb");
+  results << run_microtest(proto, "win1_a.gb");
+  results << run_microtest(proto, "win1_b.gb");
+  results << run_microtest(proto, "win2_a.gb");
+  results << run_microtest(proto, "win2_b.gb");
+  results << run_microtest(proto, "win3_a.gb");
+  results << run_microtest(proto, "win3_b.gb");
+  results << run_microtest(proto, "win4_a.gb");
+  results << run_microtest(proto, "win4_b.gb");
+  results << run_microtest(proto, "win5_a.gb");
+  results << run_microtest(proto, "win5_b.gb");
+  results << run_microtest(proto, "win6_a.gb");
+  results << run_microtest(proto, "win6_b.gb");
+  results << run_microtest(proto, "win7_a.gb");
+  results << run_microtest(proto, "win7_b.gb");
+  results << run_microtest(proto, "win8_a.gb");
+  results << run_microtest(proto, "win8_b.gb");
+  results << run_microtest(proto, "win9_a.gb");
+  results << run_microtest(proto, "win9_b.gb");
 
-  results += run_microtest(proto, "win10_a.gb");
-  results += run_microtest(proto, "win10_b.gb");
-  results += run_microtest(proto, "win11_a.gb");
-  results += run_microtest(proto, "win11_b.gb");
-  results += run_microtest(proto, "win12_a.gb");
-  results += run_microtest(proto, "win12_b.gb");
-  results += run_microtest(proto, "win13_a.gb");
-  results += run_microtest(proto, "win13_b.gb");
-  results += run_microtest(proto, "win14_a.gb");
-  results += run_microtest(proto, "win14_b.gb");
-  results += run_microtest(proto, "win15_a.gb");
-  results += run_microtest(proto, "win15_b.gb");
+  results << run_microtest(proto, "win10_a.gb");
+  results << run_microtest(proto, "win10_b.gb");
+  results << run_microtest(proto, "win11_a.gb");
+  results << run_microtest(proto, "win11_b.gb");
+  results << run_microtest(proto, "win12_a.gb");
+  results << run_microtest(proto, "win12_b.gb");
+  results << run_microtest(proto, "win13_a.gb");
+  results << run_microtest(proto, "win13_b.gb");
+  results << run_microtest(proto, "win14_a.gb");
+  results << run_microtest(proto, "win14_b.gb");
+  results << run_microtest(proto, "win15_a.gb");
+  results << run_microtest(proto, "win15_b.gb");
 
   TEST_DONE();
 }
@@ -1199,8 +1195,8 @@ TestResults GateBoyTests::test_micro_window(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_mbc1(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "mbc1_ram_banks.gb");
-  results += run_microtest(proto, "mbc1_rom_banks.gb");
+  results << run_microtest(proto, "mbc1_ram_banks.gb");
+  results << run_microtest(proto, "mbc1_rom_banks.gb");
 
   TEST_DONE();
 }
@@ -1212,12 +1208,10 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
   //LOG_B("- %s\n", filename);
 
   blob cart_blob;
-  load_blob((std::string("tests/microtests/DMG/") + filename).c_str(), cart_blob);
+  load_blob((std::string("symlinks/GBMicrotests/bin/") + filename).c_str(), cart_blob);
 
   if (cart_blob.empty()) {
-    LOG_B("%-30s ", filename);
-    LOG_Y("FILE NOT FOUND\n");
-    TEST_FAIL();
+    TEST_FAIL("%-30s FILE NOT FOUND\n", filename);
   }
 
   if (verbose) LOG_B("*%-30s ", filename);
@@ -1763,13 +1757,13 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
 TestResults GateBoyTests::test_mem(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += test_mem(proto, "ROM",  0x0000, 0x7FFF, 31,  false);
-  results += test_mem(proto, "VRAM", 0x8000, 0x9FFF, 31,  true);
-  results += test_mem(proto, "CRAM", 0xA000, 0xBFFF, 31,  true);
-  results += test_mem(proto, "IRAM", 0xC000, 0xDFFF, 31,  true);
-  results += test_mem(proto, "ERAM", 0xE000, 0xFDFF, 31,  true);
-  results += test_mem(proto, "OAM",  0xFE00, 0xFEFF, 1,   true);
-  results += test_mem(proto, "ZRAM", 0xFF80, 0xFFFE, 1,   true);
+  results << test_mem(proto, "ROM",  0x0000, 0x7FFF, 31,  false);
+  results << test_mem(proto, "VRAM", 0x8000, 0x9FFF, 31,  true);
+  results << test_mem(proto, "CRAM", 0xA000, 0xBFFF, 31,  true);
+  results << test_mem(proto, "IRAM", 0xC000, 0xDFFF, 31,  true);
+  results << test_mem(proto, "ERAM", 0xE000, 0xFDFF, 31,  true);
+  results << test_mem(proto, "OAM",  0xFE00, 0xFEFF, 1,   true);
+  results << test_mem(proto, "ZRAM", 0xFF80, 0xFFFE, 1,   true);
 
   TEST_DONE();
 }
@@ -1797,7 +1791,7 @@ TestResults GateBoyTests::test_dma(const IGateBoy* proto) {
   TEST_INIT();
 
   for (int src = 0x0000; src < 0xFE00; src += 0x1000) {
-    results += test_dma(proto, uint16_t(src));
+    results << test_dma(proto, uint16_t(src));
   }
 
   TEST_DONE();
@@ -1924,47 +1918,47 @@ TestResults GateBoyTests::test_mooneye_generic(const IGateBoy* proto) {
 
   const char* path = "tests/mooneye-gb/tests/build/acceptance/";
 
-  results += run_mooneye_test(proto, path, "boot_div-dmgABCmgb.gb");         // p
-  results += run_mooneye_test(proto, path, "boot_hwio-dmgABCmgb.gb");        // XXX sound regs
-  results += run_mooneye_test(proto, path, "boot_regs-dmgABC.gb");           // p
-  results += run_mooneye_test(proto, path, "add_sp_e_timing.gb");            // p
-  results += run_mooneye_test(proto, path, "call_cc_timing.gb");             // p
-  results += run_mooneye_test(proto, path, "call_cc_timing2.gb");            // p
-  results += run_mooneye_test(proto, path, "call_timing.gb");                // p
-  results += run_mooneye_test(proto, path, "call_timing2.gb");               // p
-  results += run_mooneye_test(proto, path, "di_timing-GS.gb");               // p
-  results += run_mooneye_test(proto, path, "div_timing.gb");                 // p
-  results += run_mooneye_test(proto, path, "ei_sequence.gb");                // p
-  results += run_mooneye_test(proto, path, "ei_timing.gb");                  // p
-  results += run_mooneye_test(proto, path, "halt_ime0_ei.gb");               // p
-  results += run_mooneye_test(proto, path, "halt_ime0_nointr_timing.gb");    // p
-  results += run_mooneye_test(proto, path, "halt_ime1_timing.gb");           // p
-  results += run_mooneye_test(proto, path, "halt_ime1_timing2-GS.gb");       // p
-  results += run_mooneye_test(proto, path, "if_ie_registers.gb");            // p
-  results += run_mooneye_test(proto, path, "intr_timing.gb");                // p
-  results += run_mooneye_test(proto, path, "jp_cc_timing.gb");               // p
-  results += run_mooneye_test(proto, path, "jp_timing.gb");                  // p
-  results += run_mooneye_test(proto, path, "ld_hl_sp_e_timing.gb");          // p
-  results += run_mooneye_test(proto, path, "oam_dma_restart.gb");            // p
-  results += run_mooneye_test(proto, path, "oam_dma_start.gb");              // p
-  results += run_mooneye_test(proto, path, "oam_dma_timing.gb");             // p
-  results += run_mooneye_test(proto, path, "pop_timing.gb");                 // p
-  results += run_mooneye_test(proto, path, "push_timing.gb");                // p
-  results += run_mooneye_test(proto, path, "rapid_di_ei.gb");                // p
-  results += run_mooneye_test(proto, path, "ret_cc_timing.gb");              // p
-  results += run_mooneye_test(proto, path, "ret_timing.gb");                 // p
-  results += run_mooneye_test(proto, path, "reti_intr_timing.gb");           // p
-  results += run_mooneye_test(proto, path, "reti_timing.gb");                // p
-  results += run_mooneye_test(proto, path, "rst_timing.gb");                 // p
-  results += run_mooneye_test(proto, path, "bits/mem_oam.gb");               // p
-  results += run_mooneye_test(proto, path, "bits/reg_f.gb");                 // p
-  results += run_mooneye_test(proto, path, "bits/unused_hwio-GS.gb");        // XXX sound regs
-  results += run_mooneye_test(proto, path, "instr/daa.gb");                  // p
-  results += run_mooneye_test(proto, path, "interrupts/ie_push.gb");         // p
-  results += run_mooneye_test(proto, path, "oam_dma/basic.gb");              // p
-  results += run_mooneye_test(proto, path, "oam_dma/basic.gb");              // p
-  results += run_mooneye_test(proto, path, "oam_dma/reg_read.gb");           // p
-  results += run_mooneye_test(proto, path, "oam_dma/sources-GS.gb");         // p
+  results << run_mooneye_test(proto, path, "boot_div-dmgABCmgb.gb");         // p
+  results << run_mooneye_test(proto, path, "boot_hwio-dmgABCmgb.gb");        // XXX sound regs
+  results << run_mooneye_test(proto, path, "boot_regs-dmgABC.gb");           // p
+  results << run_mooneye_test(proto, path, "add_sp_e_timing.gb");            // p
+  results << run_mooneye_test(proto, path, "call_cc_timing.gb");             // p
+  results << run_mooneye_test(proto, path, "call_cc_timing2.gb");            // p
+  results << run_mooneye_test(proto, path, "call_timing.gb");                // p
+  results << run_mooneye_test(proto, path, "call_timing2.gb");               // p
+  results << run_mooneye_test(proto, path, "di_timing-GS.gb");               // p
+  results << run_mooneye_test(proto, path, "div_timing.gb");                 // p
+  results << run_mooneye_test(proto, path, "ei_sequence.gb");                // p
+  results << run_mooneye_test(proto, path, "ei_timing.gb");                  // p
+  results << run_mooneye_test(proto, path, "halt_ime0_ei.gb");               // p
+  results << run_mooneye_test(proto, path, "halt_ime0_nointr_timing.gb");    // p
+  results << run_mooneye_test(proto, path, "halt_ime1_timing.gb");           // p
+  results << run_mooneye_test(proto, path, "halt_ime1_timing2-GS.gb");       // p
+  results << run_mooneye_test(proto, path, "if_ie_registers.gb");            // p
+  results << run_mooneye_test(proto, path, "intr_timing.gb");                // p
+  results << run_mooneye_test(proto, path, "jp_cc_timing.gb");               // p
+  results << run_mooneye_test(proto, path, "jp_timing.gb");                  // p
+  results << run_mooneye_test(proto, path, "ld_hl_sp_e_timing.gb");          // p
+  results << run_mooneye_test(proto, path, "oam_dma_restart.gb");            // p
+  results << run_mooneye_test(proto, path, "oam_dma_start.gb");              // p
+  results << run_mooneye_test(proto, path, "oam_dma_timing.gb");             // p
+  results << run_mooneye_test(proto, path, "pop_timing.gb");                 // p
+  results << run_mooneye_test(proto, path, "push_timing.gb");                // p
+  results << run_mooneye_test(proto, path, "rapid_di_ei.gb");                // p
+  results << run_mooneye_test(proto, path, "ret_cc_timing.gb");              // p
+  results << run_mooneye_test(proto, path, "ret_timing.gb");                 // p
+  results << run_mooneye_test(proto, path, "reti_intr_timing.gb");           // p
+  results << run_mooneye_test(proto, path, "reti_timing.gb");                // p
+  results << run_mooneye_test(proto, path, "rst_timing.gb");                 // p
+  results << run_mooneye_test(proto, path, "bits/mem_oam.gb");               // p
+  results << run_mooneye_test(proto, path, "bits/reg_f.gb");                 // p
+  results << run_mooneye_test(proto, path, "bits/unused_hwio-GS.gb");        // XXX sound regs
+  results << run_mooneye_test(proto, path, "instr/daa.gb");                  // p
+  results << run_mooneye_test(proto, path, "interrupts/ie_push.gb");         // p
+  results << run_mooneye_test(proto, path, "oam_dma/basic.gb");              // p
+  results << run_mooneye_test(proto, path, "oam_dma/basic.gb");              // p
+  results << run_mooneye_test(proto, path, "oam_dma/reg_read.gb");           // p
+  results << run_mooneye_test(proto, path, "oam_dma/sources-GS.gb");         // p
 
   TEST_DONE();
 }
@@ -1976,22 +1970,22 @@ TestResults GateBoyTests::test_mooneye_mbc1(const IGateBoy* proto) {
 
   const char* path = "tests/mooneye-gb/tests/build/emulator-only/mbc1/";
 
-  results += run_mooneye_test(proto, path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
-  results += run_mooneye_test(proto, path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
-  results += run_mooneye_test(proto, path, "bits_mode.gb");  // pass, but very slow (3 sim-sec)
-  results += run_mooneye_test(proto, path, "bits_ramg.gb");  // pass, but very slow (6 sim-sec)
+  results << run_mooneye_test(proto, path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
+  results << run_mooneye_test(proto, path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
+  results << run_mooneye_test(proto, path, "bits_mode.gb");  // pass, but very slow (3 sim-sec)
+  results << run_mooneye_test(proto, path, "bits_ramg.gb");  // pass, but very slow (6 sim-sec)
 
   // not going to bother with multicart support for now
   //"multicart_rom_8Mb.gb",
 
-  results += run_mooneye_test(proto, path, "ram_256Kb.gb");  // pass
-  results += run_mooneye_test(proto, path, "ram_64Kb.gb");   // pass
-  results += run_mooneye_test(proto, path, "rom_16Mb.gb");   // pass
-  results += run_mooneye_test(proto, path, "rom_1Mb.gb");    // pass
-  results += run_mooneye_test(proto, path, "rom_2Mb.gb");    // pass
-  results += run_mooneye_test(proto, path, "rom_4Mb.gb");    // pass
-  results += run_mooneye_test(proto, path, "rom_512Kb.gb");  // pass
-  results += run_mooneye_test(proto, path, "rom_8Mb.gb");    // pass
+  results << run_mooneye_test(proto, path, "ram_256Kb.gb");  // pass
+  results << run_mooneye_test(proto, path, "ram_64Kb.gb");   // pass
+  results << run_mooneye_test(proto, path, "rom_16Mb.gb");   // pass
+  results << run_mooneye_test(proto, path, "rom_1Mb.gb");    // pass
+  results << run_mooneye_test(proto, path, "rom_2Mb.gb");    // pass
+  results << run_mooneye_test(proto, path, "rom_4Mb.gb");    // pass
+  results << run_mooneye_test(proto, path, "rom_512Kb.gb");  // pass
+  results << run_mooneye_test(proto, path, "rom_8Mb.gb");    // pass
 
   TEST_DONE();
 }
@@ -2003,19 +1997,19 @@ TestResults GateBoyTests::test_mooneye_timer(const IGateBoy* proto) {
 
   const char* path = "tests/mooneye-gb/tests/build/acceptance/timer/";
 
-  results += run_mooneye_test(proto, path, "div_write.gb");            // pass
-  results += run_mooneye_test(proto, path, "rapid_toggle.gb");         // pass
-  results += run_mooneye_test(proto, path, "tim00.gb");                // pass
-  results += run_mooneye_test(proto, path, "tim00_div_trigger.gb");    // pass
-  results += run_mooneye_test(proto, path, "tim01.gb");                // pass
-  results += run_mooneye_test(proto, path, "tim01_div_trigger.gb");    // pass
-  results += run_mooneye_test(proto, path, "tim10.gb");                // pass
-  results += run_mooneye_test(proto, path, "tim10_div_trigger.gb");    // pass
-  results += run_mooneye_test(proto, path, "tim11.gb");                // pass
-  results += run_mooneye_test(proto, path, "tim11_div_trigger.gb");    // pass
-  results += run_mooneye_test(proto, path, "tima_reload.gb");          // pass
-  results += run_mooneye_test(proto, path, "tima_write_reloading.gb"); // pass
-  results += run_mooneye_test(proto, path, "tma_write_reloading.gb");  // pass
+  results << run_mooneye_test(proto, path, "div_write.gb");            // pass
+  results << run_mooneye_test(proto, path, "rapid_toggle.gb");         // pass
+  results << run_mooneye_test(proto, path, "tim00.gb");                // pass
+  results << run_mooneye_test(proto, path, "tim00_div_trigger.gb");    // pass
+  results << run_mooneye_test(proto, path, "tim01.gb");                // pass
+  results << run_mooneye_test(proto, path, "tim01_div_trigger.gb");    // pass
+  results << run_mooneye_test(proto, path, "tim10.gb");                // pass
+  results << run_mooneye_test(proto, path, "tim10_div_trigger.gb");    // pass
+  results << run_mooneye_test(proto, path, "tim11.gb");                // pass
+  results << run_mooneye_test(proto, path, "tim11_div_trigger.gb");    // pass
+  results << run_mooneye_test(proto, path, "tima_reload.gb");          // pass
+  results << run_mooneye_test(proto, path, "tima_write_reloading.gb"); // pass
+  results << run_mooneye_test(proto, path, "tma_write_reloading.gb");  // pass
 
   TEST_DONE();
 }
@@ -2027,18 +2021,18 @@ TestResults GateBoyTests::test_mooneye_ppu(const IGateBoy* proto) {
 
   const char* path = "tests/mooneye-gb/tests/build/acceptance/ppu/";
 
-  results += run_mooneye_test(proto, path, "hblank_ly_scx_timing-GS.gb");      // p
-  results += run_mooneye_test(proto, path, "intr_1_2_timing-GS.gb");           // p
-  results += run_mooneye_test(proto, path, "intr_2_0_timing.gb");              // p
-  results += run_mooneye_test(proto, path, "intr_2_mode0_timing.gb");          // p
-  results += run_mooneye_test(proto, path, "intr_2_mode0_timing_sprites.gb");  // dmg pass, gateboy fail
-  results += run_mooneye_test(proto, path, "intr_2_mode3_timing.gb");          // p
-  results += run_mooneye_test(proto, path, "intr_2_oam_ok_timing.gb");         // p
-  results += run_mooneye_test(proto, path, "lcdon_timing-GS.gb");              // dmg pass, gateboy fail - this is the same as lcdon_to_stat2_a
-  results += run_mooneye_test(proto, path, "lcdon_write_timing-GS.gb");        // dmg pass, gateboy fail - probably the same as lcdon_to_oam_unlock_d
-  results += run_mooneye_test(proto, path, "stat_irq_blocking.gb");            // p
-  results += run_mooneye_test(proto, path, "stat_lyc_onoff.gb");               // p
-  results += run_mooneye_test(proto, path, "vblank_stat_intr-GS.gb");          // p
+  results << run_mooneye_test(proto, path, "hblank_ly_scx_timing-GS.gb");      // p
+  results << run_mooneye_test(proto, path, "intr_1_2_timing-GS.gb");           // p
+  results << run_mooneye_test(proto, path, "intr_2_0_timing.gb");              // p
+  results << run_mooneye_test(proto, path, "intr_2_mode0_timing.gb");          // p
+  results << run_mooneye_test(proto, path, "intr_2_mode0_timing_sprites.gb");  // dmg pass, gateboy fail
+  results << run_mooneye_test(proto, path, "intr_2_mode3_timing.gb");          // p
+  results << run_mooneye_test(proto, path, "intr_2_oam_ok_timing.gb");         // p
+  results << run_mooneye_test(proto, path, "lcdon_timing-GS.gb");              // dmg pass, gateboy fail - this is the same as lcdon_to_stat2_a
+  results << run_mooneye_test(proto, path, "lcdon_write_timing-GS.gb");        // dmg pass, gateboy fail - probably the same as lcdon_to_oam_unlock_d
+  results << run_mooneye_test(proto, path, "stat_irq_blocking.gb");            // p
+  results << run_mooneye_test(proto, path, "stat_lyc_onoff.gb");               // p
+  results << run_mooneye_test(proto, path, "vblank_stat_intr-GS.gb");          // p
 
   TEST_DONE();
 }
@@ -2051,11 +2045,7 @@ TestResults GateBoyTests::run_mooneye_test(const IGateBoy* proto, const char* pa
   blob cart_blob;
   load_blob((std::string(path) + std::string(filename)).c_str(), cart_blob);
 
-  if (cart_blob.empty()) {
-    LOG_B("%-30s ", filename);
-    LOG_Y("FILE NOT FOUND\n");
-    TEST_FAIL();
-  }
+  ASSERT_EQ(false, cart_blob.empty(), "FILE NOT FOUND - %-30s\n", filename);
 
   //if (verbose) LOG_B("%-50s ", filename);
 
@@ -2078,8 +2068,7 @@ TestResults GateBoyTests::run_mooneye_test(const IGateBoy* proto, const char* pa
   }
   else {
     if (!verbose) LOG_B("%-50s ", filename);
-    LOG_R("%s @ %d\n", (mcycle == timeout) ? "TIMEOUT" : "FAIL", mcycle);
-    TEST_FAIL();
+    TEST_FAIL("%s @ %d\n", (mcycle == timeout) ? "TIMEOUT" : "FAIL", mcycle);
   }
   */
 

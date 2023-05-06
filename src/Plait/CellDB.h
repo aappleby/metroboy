@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MetroLib/src/CoreLib/Dumper.h"
-#include "MetroLib/src/CoreLib/Check.h"
-#include "MetroLib/src/CoreLib/Log.h"
+#include "metrolib/core/Dumper.h"
+#include "metrolib/core/Check.h"
+#include "metrolib/core/Log.h"
 #include <string>
 #include <vector>
 #include <set>

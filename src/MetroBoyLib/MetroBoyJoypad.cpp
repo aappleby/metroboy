@@ -1,10 +1,10 @@
 #include "MetroBoyLib/MetroBoyJoypad.h"
-#include "MetroLib/src/CoreLib/Constants.h"
+#include "metrolib/core/Constants.h"
 #include <assert.h>
 
-#include "MetroLib/src/CoreLib/Dumper.h"
-#include "MetroLib/src/GameboyLib/Constants.h"
-#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
+#include "metrolib/core/Dumper.h"
+#include "metrolib/gameboy/GBConstants.h"
+#include "metrolib/gameboy/MetroBoyCPU.h"
 
 void MetroBoyJoypad::reset() {
   val = 0xFF;

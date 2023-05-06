@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #if 0
-#include "MetroLib/src/CoreLib/SignalTree.h"
+#include "metrolib/core/SignalTree.h"
 
 class TraceViewer {
 public:

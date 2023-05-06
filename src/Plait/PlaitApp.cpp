@@ -1,11 +1,11 @@
 #include "Plait/PlaitApp.h"
 
-#include "MetroLib/src/AppLib/AppHost.h"
-#include "MetroLib/src/AppLib/DummyApp.h"
-#include "MetroLib/src/AppLib/GLBase.h"
-#include "MetroLib/src/AppLib/GLBase.h"
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/CoreLib/Utils.h"
+#include "metrolib/appbase/AppHost.h"
+#include "metrolib/appbase/DummyApp.h"
+#include "metrolib/appbase/GLBase.h"
+#include "metrolib/appbase/GLBase.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/core/Utils.h"
 #include "imgui/imgui.h"
 #include "Plait/CellDB.h"
 

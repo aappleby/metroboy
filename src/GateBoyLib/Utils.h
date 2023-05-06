@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Regs.h"
-#include "MetroLib/src/CoreLib/Types.h"
+#include "metrolib/core/Types.h"
 
 //-----------------------------------------------------------------------------
 

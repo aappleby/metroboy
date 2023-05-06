@@ -1,18 +1,18 @@
 #include "Metronica/MetronicaApp.h"
 
 
-#include "MetroLib/src/AppLib/AppHost.h"
-#include "MetroLib/src/AudioLib/Audio.h"
-#include "MetroLib/src/AppLib/GLBase.h"
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/CoreLib/Dumper.h" // for StringDumper
-#include "MetroLib/src/CoreLib/Tests.h"
+#include "metrolib/appbase/AppHost.h"
+#include "metrolib/audio/Audio.h"
+#include "metrolib/appbase/GLBase.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/core/Dumper.h" // for StringDumper
+#include "metrolib/core/Tests.h"
 #include "GateBoyLib/GateBoyDumper.h"
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/Utils.h"
 //#include "MetroBoyLib/MetroBoySPU.h"
-#include "MetroBoyLib/MetroBoySPU2.h"
+//#include "MetroBoyLib/MetroBoySPU2.h"
 
 #define SDL_MAIN_HANDLED
 #ifdef _MSC_VER
@@ -56,7 +56,7 @@ struct MusicEvent {
 std::vector<MusicEvent> music;
 int music_cursor = 0;
 
-MetroBoySPU2 spu2;
+//MetroBoySPU2 spu2;
 
 void MetronicaApp::app_init(int screen_w, int screen_h) {
   dvec2 screen_size(screen_w, screen_h);
@@ -64,7 +64,7 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   LOG_G("MetronicaApp::app_init()\n");
   LOG_INDENT();
 
-  spu2.tick(true, 0, 0, 0, 0);
+  //spu2.tick(true, 0, 0, 0, 0);
 
   audio_init();
 
@@ -191,9 +191,9 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
         music_cursor++;
       }
 
-      spu2.tick(false, req.addr, (uint8_t)req.data, req.read, req.write);
-      spu2.tock_out();
-      audio_post(input_hz, spu2.out_l, spu2.out_r);
+      //spu2.tick(false, req.addr, (uint8_t)req.data, req.read, req.write);
+      //spu2.tock_out();
+      //audio_post(input_hz, spu2.out_l, spu2.out_r);
     }
   }
 

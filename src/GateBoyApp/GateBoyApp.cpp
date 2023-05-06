@@ -2,13 +2,13 @@
 #include "GateBoyLib/GateBoyDumper.h"
 #include "GateBoyLib/Utils.h"
 
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/CoreLib/Dumper.h" // for StringDumper
-#include "MetroLib/src/CoreLib/Tests.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/core/Dumper.h" // for StringDumper
+#include "metrolib/core/Tests.h"
 
-#include "MetroLib/src/AppLib/AppHost.h"
-#include "MetroLib/src/AudioLib/Audio.h"
-#include "MetroLib/src/AppLib/GLBase.h"
+#include "metrolib/appbase/AppHost.h"
+#include "metrolib/appbase/GLBase.h"
+#include "metrolib/audio/Audio.h"
 
 #define SDL_MAIN_HANDLED
 #ifdef _MSC_VER
@@ -165,16 +165,16 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   blob cart;
 
-  //load_blob("tests/microtests/DMG/sprite4_0_b.gb", cart);
-  //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
-  //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
+  //load_blob("symlinks/GBMicrotests/bin/sprite4_0_b.gb", cart);
+  //load_blob("symlinks/GBMicrotests/bin/line_153_lyc0_int_inc_sled.gb", cart);
+  //load_blob("symlinks/GBMicrotests/bin/oam_read_l0_d.gb", cart);
   load_blob("../LinksAwakening.gb", cart);
   //load_blob("tetris.gb", cart);
   //load_blob("SML.gb", cart);
   //load_blob("pman.gb", cart);
   //load_blob("tests/instr_timing.gb", cart);
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
-  //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
+  //load_blob("symlinks/GBMicrotests/bin/timer_tma_write_a.gb", cart);
 
   gb_thread->load_cart_blob(cart);
   gb_thread->reset();

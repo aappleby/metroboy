@@ -6,7 +6,7 @@
 
 #include "GateBoyLib/Gates.h"
 #include "GateBoyLib/Regs.h"
-#include "MetroLib/src/CoreLib/Dumper.h"
+#include "metrolib/core/Dumper.h"
 
 #pragma warning(disable: 4996)
 

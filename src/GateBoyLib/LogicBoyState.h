@@ -1,7 +1,7 @@
 /// plait_noparse
 #pragma once
 
-#include "MetroLib/src/CoreLib/Result.h"
+#include "metrolib/core/Result.h"
 
 #include "GateBoyLib/GateBoyTimer.h"
 #include "GateBoyLib/GateBoyLCD.h"

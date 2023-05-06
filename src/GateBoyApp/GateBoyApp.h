@@ -1,16 +1,17 @@
 #pragma once
 
-#include "MetroLib/src/GameboyLib/Assembler.h"
-#include "MetroLib/src/CoreLib/StateStack.h"
-#include "MetroLib/src/CoreLib/Dumper.h" // for StringDumper
-#include "MetroLib/src/AppLib/App.h"
-#include "MetroLib/src/AppLib/GridPainter.h"
-#include "MetroLib/src/AppLib/TextPainter.h"
-#include "MetroLib/src/AppLib/DumpPainter.h"
-#include "MetroLib/src/AppLib/Blitter.h"
-#include "MetroLib/src/GameboyLib/GBBlitter.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/GateBoyThread.h"
+
+#include "metrolib/appbase/App.h"
+#include "metrolib/appbase/Blitter.h"
+#include "metrolib/appbase/DumpPainter.h"
+#include "metrolib/appbase/GridPainter.h"
+#include "metrolib/appbase/TextPainter.h"
+#include "metrolib/core/Dumper.h" // for StringDumper
+#include "metrolib/core/StateStack.h"
+#include "metrolib/gameboy/Assembler.h"
+#include "metrolib/gameboy/GBBlitter.h"
 
 class GateBoyApp : public App {
 public:

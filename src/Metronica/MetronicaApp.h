@@ -1,15 +1,15 @@
 #pragma once
 
-//#include "MetroLib/src/CoreLib/Assembler.h"
-//#include "MetroLib/src/CoreLib/StateManager2.h"
-//#include "MetroLib/src/CoreLib/SmoothTimer.h"
+//#include "metrolib/core/Assembler.h"
+//#include "metrolib/core/StateManager2.h"
+//#include "metrolib/core/SmoothTimer.h"
 
-#include "MetroLib/src/AppLib/App.h"
-#include "MetroLib/src/AppLib/GridPainter.h"
-#include "MetroLib/src/AppLib/TextPainter.h"
-#include "MetroLib/src/AppLib/DumpPainter.h"
-//#include "MetroLib/src/AppLib/GBBlitter.h"
-#include "MetroLib/src/AppLib/Blitter.h"
+#include "metrolib/appbase/App.h"
+#include "metrolib/appbase/GridPainter.h"
+#include "metrolib/appbase/TextPainter.h"
+#include "metrolib/appbase/DumpPainter.h"
+//#include "metrolib/appbase/GBBlitter.h"
+#include "metrolib/appbase/Blitter.h"
 
 //#include "GateBoyLib/GateBoy.h"
 //#include "GateBoyLib/GateBoyThread.h"

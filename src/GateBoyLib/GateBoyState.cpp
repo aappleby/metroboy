@@ -2,9 +2,9 @@
 
 #include "GateBoyLib/Gates.h"
 #include "GateBoyLib/Utils.h"
-#include "MetroLib/src/CoreLib/Constants.h"
-#include "MetroLib/src/CoreLib/Result.h"
-#include "MetroLib/src/GameboyLib/Constants.h"
+#include "metrolib/core/Constants.h"
+#include "metrolib/core/Result.h"
+#include "metrolib/gameboy/GBConstants.h"
 
 
 #include <cstring>

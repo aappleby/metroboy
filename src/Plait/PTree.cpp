@@ -1,6 +1,6 @@
 #include "Plait/PTree.h"
-#include "MetroLib/src/CoreLib/Types.h"
-#include "MetroLib/src/CoreLib/File.h"
+#include "metrolib/core/Types.h"
+#include "metrolib/core/File.h"
 #include <regex>
 
 using namespace std;

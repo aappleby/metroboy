@@ -1,10 +1,10 @@
 #pragma once
 
-#include "MetroLib/src/CoreLib/File.h"
-#include "MetroLib/src/CoreLib/Result.h"
-#include "MetroLib/src/GameboyLib/MetroBoyCPU.h"
-#include "MetroLib/src/GameboyLib/Constants.h"
-#include "MetroLib/src/CoreLib/Log.h"
+#include "metrolib/core/File.h"
+#include "metrolib/core/Result.h"
+#include "metrolib/gameboy/MetroBoyCPU.h"
+#include "metrolib/gameboy/GBConstants.h"
+#include "metrolib/core/Log.h"
 
 #include "GateBoyLib/IGateBoy.h"
 #include "GateBoyLib/Probe.h"

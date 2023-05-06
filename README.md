@@ -63,8 +63,8 @@ All the code is cross-platform and has been tested under Windows 10, Windows 11,
 
 - On Linux, make sure you have libsdl2-dev installed and run "ninja" from the repo root. You'll get a set of "fast mode" binaries in bin/, which should be launched from the repo root as they make assumptions about directories and such.
 
-- Test roms are in tests/microtests/DMG. If you're using some Linux flavor, you can rebuild them from source by installing [wla-dx](https://github.com/vhelin/wla-dx) and then running "ninja" in tests/microtests.
-- Once the test roms are built, run bin/GateBoyTests from root. The tests should take a second or two, and there should be 20 (known) failures.
+- Test roms are symlinked to [GBMicrotests](https://github.com/aappleby/GBMicrotests).
+- To run all tests roms, run bin/GateBoyTests from root. The tests should take a second or two, and there should be 20 (known) failures.
 - Running other tests (mooneye, mealybug, etc) requires additional setup that I haven't automated yet. :/
 
 # What happened to MetroBoy?

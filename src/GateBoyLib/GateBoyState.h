@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MetroLib/src/CoreLib/Result.h"
-#include "MetroLib/src/CoreLib/FieldInfo.h"
+#include "metrolib/core/Result.h"
+#include "metrolib/core/FieldInfo.h"
 
 #include "GateBoyLib/GateBoyConfig.h"
 #include "GateBoyLib/GateBoyTimer.h"

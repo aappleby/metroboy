@@ -1,6 +1,6 @@
 #pragma once
 #include "GateBoyLib/IGateBoy.h"
-#include "MetroLib/src/CoreLib/Result.h"
+#include "metrolib/core/Result.h"
 
 struct GateBoy;
 struct LogicBoy;

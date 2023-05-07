@@ -1,6 +1,6 @@
-# This repo is the home of MetroBoy, GateBoy, LogicBoy, and Plait.... (yes, rather too many projects for one repo but they're very tightly interconnected)
+# This repo is the home of MetroBoy, GateBoy, and LogicBoy (yes, rather too many projects for one repo but they're very tightly interconnected)
 
-Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a translation of GateBoy into more standard C++ idioms, while maintaining bit-identical behavior with the reference GateBoy model. It currently runs at 60+ fps instead of 6 fps in "fast" mode, with a few more optimization passes still left to go. Plait is also getting rewritten to use TreeSitter, it's currently broken.
+Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a translation of GateBoy into more standard C++ idioms, while maintaining bit-identical behavior with the reference GateBoy model. It currently runs at 60+ fps instead of 6 fps in "fast" mode, with a few more optimization passes still left to go.
 
 ## GateBoy
 
@@ -8,7 +8,7 @@ Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a t
 
 GateBoy is a **gate-level simulation** of the original Game Boy hardware that was [**reverse-engineered from die shots of the original DMG-01 chip**](https://siliconpr0n.org/map/nintendo/dmg-cpu-b/mz_mit20x/#x=9744&y=8000&z=3). It includes all the standard cells on the chip but not the CPU - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
 
-Precompiled builds with test ROMS and Plait data are here - https://github.com/aappleby/MetroBoy/releases/tag/GateBoy_v0.1.1
+Precompiled builds with test ROMS are here - https://github.com/aappleby/MetroBoy/releases/tag/GateBoy_v0.1.1
 
 GateBoy runs at around 6 to 8 frames per second in "fast mode" on a modern 4-ish ghz processor. That's quite horrible compared to an emulator, but pretty impressive for something that's simulating a few billion gates per second on a single core.
 
@@ -19,7 +19,7 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 ## GateBoy FAQ
 
 - How is this simulation connected to the Furrtek schematics?
-  - Furrtek assigned every gate on the die and in the schematic a 4-character code like "ASUR" or "BALY". Each of those gates has a corresponding line in the GateBoy source code. Lines in the source are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR (which happens to be a 2-mux) is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct. The tool Plait (described below) parses the GateBoy source code to verify that all tagged lines are internally consistent.
+  - Furrtek assigned every gate on the die and in the schematic a 4-character code like "ASUR" or "BALY". Each of those gates has a corresponding line in the GateBoy source code. Lines in the source are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR (which happens to be a 2-mux) is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
   - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="images/ASUR_context1.png" alt="drawing" width="100%"/>
   - Here's the same chunk with Furrtek's annotations - <img src="images/ASUR_context2.png" alt="drawing" width="100%"/>
   - And here's a closeup showing the three inputs coming into the top "rungs" of the cell, and the output at the bottom - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
@@ -70,14 +70,6 @@ All the code is cross-platform and has been tested under Windows 10, Windows 11,
 # What happened to MetroBoy?
 
 MetroBoy is/was a higher level Game Boy emulator that I wrote from scratch before Furrtek released his schematics. I got it to the point where it passed virtually all the available tests, and then hacked it up in various ways to help get GateBoy working. MetroBoy is currently broken, don't use it. It will be coming back eventually.
-
-# What's Plait?
-
-![Plait screenshot](images/plait.png "Plait screenshot")
-
-Plait is a tool for visualizing and untangling the mess of gates that makes up GateBoy. It's not at all finished yet, but there's enough functionality to be useful. It's also quite fun to poke around in the graph and see how things like the pixel pipe are actually implemented, gate-wise. The pic above is the "pixel output" circuit that merges the background tile pixels with the sprite pixels, applies the color palettes, and sends the pixels to the LCD.
-
-Plait **parses the GateBoy source code**, extracts all tagged (`/*#p08.ASUR*/`) lines, and converts the result to an editable graph. To make the level of complexity more manageable, Plait includes multiple editing features to help modularize and untangle the graph.
 
 # So what comes after GateBoy?
 

@@ -63,7 +63,6 @@ rule copy
 # /Gd                 __cdecl calling convention
 # /TP                 all files on the command line are CPP
 
-build bin/Plait.exe         : copy bin/Plait
 build bin/GateBoyApp.exe    : copy bin/GateBoyApp
 build bin/GateBoyTests.exe  : copy bin/GateBoyTests
 build bin/MetroBoyApp.exe   : copy bin/MetroBoyApp
@@ -120,25 +119,6 @@ build bin/MetronicaApp : link $
   bin/AppLib.a $
   bin/CoreLib.a $
   bin/imgui.a
-
-################################################################################
-# Plait
-
-build obj/Plait/CellDB.o   : compile_cpp src/Plait/CellDB.cpp
-build obj/Plait/Plait.o    : compile_cpp src/Plait/Plait.cpp
-build obj/Plait/PlaitApp.o : compile_cpp src/Plait/PlaitApp.cpp
-build obj/Plait/PTree.o    : compile_cpp src/Plait/PTree.cpp
-
-build bin/Plait : link $
-  bin/CoreLib.a $
-  bin/AppLib.a $
-  bin/imgui.a $
-  bin/TreeSitter.a $
-  obj/glad.o $
-  obj/Plait/Plait.o $
-  obj/Plait/PlaitApp.o $
-  obj/Plait/PTree.o $
-  obj/Plait/CellDB.o
 
 ################################################################################
 # CoreLib

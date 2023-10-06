@@ -15,7 +15,7 @@ build_mode = /O2 /D CONFIG_RELEASE /D NDEBUG /D _CRT_SECURE_NO_WARNINGS
 default_gpp = CL.exe /nologo /std:c++latest /EHsc /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2 /sdl- /Gm- /GS- /Z7 /DEBUG /FS /GL
 default_gcc = CL.exe /nologo /std:c17 /showIncludes
 
-default_includes = /Isrc /Isymlinks /Isymlinks/glad /Isrc/tree-sitter/lib/include /Isymlinks/tree-sitter/lib/include
+default_includes = /Isrc /Isymlinks /Isymlinks/glad
 global_libs      = src/SDL2.lib
 
 ################################################################################
@@ -68,18 +68,6 @@ build bin/GateBoyTests.exe  : copy bin/GateBoyTests
 build bin/MetroBoyApp.exe   : copy bin/MetroBoyApp
 build bin/MetroBoyTests.exe : copy bin/MetroBoyTests
 build bin/MetronicaApp.exe  : copy bin/MetronicaApp
-
-################################################################################
-# TreeSitter libraries
-
-build obj/tree-sitter/lib.o     : compile_c symlinks/tree-sitter/lib/src/lib.c
-build obj/tree-sitter/parser.o  : compile_c symlinks/tree-sitter-cpp/src/parser.c
-build obj/tree-sitter/scanner.o : compile_c symlinks/tree-sitter-cpp/src/scanner.cc
-
-build bin/TreeSitter.a : lib $
-  obj/tree-sitter/lib.o $
-  obj/tree-sitter/parser.o $
-  obj/tree-sitter/scanner.o
 
 ################################################################################
 # GateBoyApp

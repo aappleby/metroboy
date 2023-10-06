@@ -11,7 +11,7 @@ build_mode   = -DCONFIG_DEBUG -O0
 #default_gpp      = g++ -g -MMD -std=gnu++2a -Wunused-variable -Werror
 default_gpp      = g++ -g -MMD -std=gnu++2a
 default_gcc      = gcc -g -MMD
-default_includes = -Isrc -Isymlinks -Isymlinks/MetroLib -Isrc/tree-sitter/lib/include -Isymlinks/tree-sitter/lib/include
+default_includes = -Isrc -Isymlinks -Isymlinks/metrolib
 
 ################################################################################
 
@@ -28,32 +28,17 @@ rule compile_c
 rule link
   command = ${default_gpp} ${build_mode} ${in} ${libs} -o ${out}
 
-#  command = ${default_gpp} ${build_mode} -Wl,--whole-archive ${in} -Wl,--no-whole-archive ${global_libs} -o ${out}
-#global_libs      = -lSDL2 -ldl -lpthread
-
 rule lib
   command = ar rcs ${out} ${in}
 
 rule run_command
   command = $command
 
-#build symlinks/MetroLib/bin/metrolib/libappbase.a : run_command
-#  command = ninja -C symlinks/MetroLib
+build symlinks/metrolib/bin/metrolib/libappbase.a : run_command
+  command = ninja -C symlinks/metrolib
 
-#build symlinks/MetroLib/bin/metrolib/libcore.a : run_command
-#  command = ninja -C symlinks/MetroLib
-
-################################################################################
-# TreeSitter libraries
-
-build obj/tree-sitter/lib.o     : compile_c symlinks/tree-sitter/lib/src/lib.c
-build obj/tree-sitter/parser.o  : compile_c symlinks/tree-sitter-cpp/src/parser.c
-build obj/tree-sitter/scanner.o : compile_c symlinks/tree-sitter-cpp/src/scanner.cc
-
-build bin/TreeSitter.a : lib $
-  obj/tree-sitter/lib.o $
-  obj/tree-sitter/parser.o $
-  obj/tree-sitter/scanner.o
+build symlinks/metrolib/bin/metrolib/libcore.a : run_command
+  command = ninja -C symlinks/metrolib
 
 ################################################################################
 # GateBoyApp
@@ -64,10 +49,10 @@ build bin/GateBoyApp : link $
   obj/GateBoyApp.o $
   obj/glad.o $
   bin/GateBoyLib.a $
-  symlinks/MetroLib/bin/metrolib/libappbase.a $
-  symlinks/MetroLib/bin/metrolib/libaudio.a $
-  symlinks/MetroLib/bin/metrolib/libcore.a $
-  symlinks/MetroLib/bin/metrolib/libgameboy.a $
+  symlinks/metrolib/bin/metrolib/libappbase.a $
+  symlinks/metrolib/bin/metrolib/libaudio.a $
+  symlinks/metrolib/bin/metrolib/libcore.a $
+  symlinks/metrolib/bin/metrolib/libgameboy.a $
   bin/imgui.a
   libs=-lSDL2 -ldl -lpthread
 
@@ -80,30 +65,12 @@ build bin/MetroBoyApp : link $
   obj/MetroBoyApp.o $
   obj/glad.o $
   bin/MetroBoyLib.a $
-  symlinks/MetroLib/bin/metrolib/libappbase.a $
-  symlinks/MetroLib/bin/metrolib/libaudio.a $
-  symlinks/MetroLib/bin/metrolib/libcore.a $
-  symlinks/MetroLib/bin/metrolib/libgameboy.a $
+  symlinks/metrolib/bin/metrolib/libappbase.a $
+  symlinks/metrolib/bin/metrolib/libaudio.a $
+  symlinks/metrolib/bin/metrolib/libcore.a $
+  symlinks/metrolib/bin/metrolib/libgameboy.a $
   bin/imgui.a
   libs=-lSDL2
-
-################################################################################
-# MetronicaApp
-
-# FIXME this needs to go in its own repo
-
-#build obj/MetronicaApp.o : compile_cpp src/Metronica/MetronicaApp.cpp
-#
-#build bin/MetronicaApp : link $
-#  obj/MetronicaApp.o $
-#  obj/glad.o $
-#  bin/MetroBoyLib.a $
-#  symlinks/MetroLib/bin/metrolib/libappbase.a $
-#  symlinks/MetroLib/bin/metrolib/libaudio.a $
-#  symlinks/MetroLib/bin/metrolib/libcore.a $
-#  symlinks/MetroLib/bin/metrolib/libgameboy.a $
-#  bin/imgui.a
-#  libs=-lSDL2
 
 ################################################################################
 # GateBoyLib
@@ -223,15 +190,10 @@ build bin/MetroBoyLib.a : lib $
   obj/MetroBoyVRAM.o $
   obj/MetroBoyZRAM.o $
 
-
-
-#build obj/MetroBoySPU.o        : compile_cpp src/MetroBoyLib/MetroBoySPU.cpp
-  #obj/MetroBoySPU.o $
-
 ################################################################################
 # Other libs
 
-build obj/glad.o          : compile_cpp symlinks/MetroLib/metrolib/glad/glad.c
+build obj/glad.o          : compile_cpp symlinks/glad/glad.c
 
 build obj/imgui.o         : compile_cpp symlinks/imgui/imgui.cpp
 build obj/imgui_demo.o    : compile_cpp symlinks/imgui/imgui_demo.cpp
@@ -254,9 +216,9 @@ build obj/GateBoyTests.o : compile_cpp src/GateBoyTests/GateBoyTests.cpp
 build bin/GateBoyTests : link $
   obj/GateBoyTests.o $
   bin/GateBoyLib.a $
-  symlinks/MetroLib/bin/metrolib/libaudio.a $
-  symlinks/MetroLib/bin/metrolib/libcore.a $
-  symlinks/MetroLib/bin/metrolib/libgameboy.a
+  symlinks/metrolib/bin/metrolib/libaudio.a $
+  symlinks/metrolib/bin/metrolib/libcore.a $
+  symlinks/metrolib/bin/metrolib/libgameboy.a
   libs=-lSDL2
 
 ################################################################################
@@ -273,5 +235,5 @@ build bin/MetroBoyTests : link $
   obj/test_mooneye.o $
   obj/test_screenshot.o $
   bin/MetroBoyLib.a $
-  symlinks/MetroLib/bin/metrolib/libcore.a $
-  symlinks/MetroLib/bin/metrolib/libgameboy.a
+  symlinks/metrolib/bin/metrolib/libcore.a $
+  symlinks/metrolib/bin/metrolib/libgameboy.a

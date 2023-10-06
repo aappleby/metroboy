@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
   AppHost* app_host = new AppHost(app);
   int ret = app_host->app_main(argc, argv);
   delete app;
+  LOG("Shutting down\n");
   return ret;
 
 #if 0

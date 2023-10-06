@@ -11,7 +11,7 @@ build_mode   = -DCONFIG_DEBUG -O0
 #default_gpp      = g++ -g -MMD -std=gnu++2a -Wunused-variable -Werror
 default_gpp      = g++ -g -MMD -std=gnu++2a
 default_gcc      = gcc -g -MMD
-default_includes = -Isrc -Isymlinks -Isymlinks/metrolib
+default_includes = -Isrc -Isymlinks -Isymlinks/metrolib -Isymlinks/metron
 
 ################################################################################
 

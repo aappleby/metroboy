@@ -376,7 +376,7 @@ void LogicBoy::tock_cpu() {
 
   if (DELTA_GH) {
     cpu.core.reg.intf_latch = lb_state.reg_if; // -EF +FG +GH -HA
-    if (bit(lb_state.reg_if, 2)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
+    if (bit(lb_state.reg_if, 2)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
 
     if (sys.cpu_en && !sys.in_por) {
       if (cpu.core.reg.op_state == 0) {
@@ -499,10 +499,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     probe("cpu_write", write & 1);
 
     wire req_addr_boot = (addr >= 0x0000) && (addr <= 0x00FF) && !(state_old.cpu_signals.TEPU_BOOT_BITn.state & 1);
-    wire req_addr_rom  = (addr >= 0x0000) && (addr <= 0x7FFF);
+    //wire req_addr_rom  = (addr >= 0x0000) && (addr <= 0x7FFF);
     wire req_addr_vram = (addr >= 0x8000) && (addr <= 0x9FFF);
-    wire req_addr_ram  = (addr >= 0xA000) && (addr <= 0xFDFF);
-    wire req_addr_oam  = (addr >= 0xFE00) && (addr <= 0xFEFF);
+    //wire req_addr_ram  = (addr >= 0xA000) && (addr <= 0xFDFF);
+    //wire req_addr_oam  = (addr >= 0xFE00) && (addr <= 0xFEFF);
     wire req_addr_hi   = (addr >= 0xFE00);
 
     state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DH && (read || (write && addr >= 0xFF10))) & 1);
@@ -554,7 +554,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire req_addr_oam  = (cpu.core.reg.bus_req_new.addr >= 0xFE00) && (cpu.core.reg.bus_req_new.addr <= 0xFEFF);
   wire req_addr_hi   = (cpu.core.reg.bus_req_new.addr >= 0xFE00);
   wire req_addr_lo   = (cpu.core.reg.bus_req_new.addr <= 0x00FF);
-  wire req_addr_boot = (cpu.core.reg.bus_req_new.addr >= 0x0000) && (cpu.core.reg.bus_req_new.addr <= 0x00FF) && !state_old.cpu_signals.TEPU_BOOT_BITn.state;
+  //wire req_addr_boot = (cpu.core.reg.bus_req_new.addr >= 0x0000) && (cpu.core.reg.bus_req_new.addr <= 0x00FF) && !state_old.cpu_signals.TEPU_BOOT_BITn.state;
 
   /*
   wire ext_addr_new = (cpu.core.reg.bus_req_new.read || cpu.core.reg.bus_req_new.write) &&
@@ -578,7 +578,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   const auto cpu_addr_new = state_new.cpu_abus;
   auto& cpu_dbus_new = state_new.cpu_dbus;
 
-  
+
   {
     //state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && cpu.core.reg.bus_req_new.read;
     auto addr  = cpu.core.reg.bus_req_new.addr;
@@ -712,7 +712,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire bgw_tile_new =  bit(state_new.reg_lcdc, 4);
   wire win_en_new   = !bit(state_new.reg_lcdc, 5);
   wire win_map_new  =  bit(state_new.reg_lcdc, 6);
-  
+
   wire vid_rst_evn_new  =  bit(state_new.reg_lcdc, 7);
 
   if (vid_rst_evn_old && !vid_rst_evn_new) CHECK_P(DELTA_EVEN);
@@ -964,7 +964,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  auto XYMU_RENDERINGn_old = state_old.XYMU_RENDERINGn;
+  //auto XYMU_RENDERINGn_old = state_old.XYMU_RENDERINGn;
   auto XYMU_RENDERINGn_new = state_new.XYMU_RENDERINGn;
 
   if (vid_rst_evn_new || line_rst_odd_new) {
@@ -1287,7 +1287,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
   }
   else if (DELTA_EVEN) {
-    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state;   
+    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state;
   }
   else if (DELTA_ODD) {
   }
@@ -1346,7 +1346,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if (!state_old.win_ctrl.RYDY_WIN_HITp.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp && (state_old.pix_count != 167)) {
       wire POHU_SCX_FINE_MATCHp_old = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn.state && (state_old.fine_count_odd == (~state_old.reg_scx & 0b111));
-      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = POHU_SCX_FINE_MATCHp_old; 
+      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = POHU_SCX_FINE_MATCHp_old;
       state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
     }
 
@@ -1425,7 +1425,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if ((state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state)) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
     if (sfetch_done_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-    
+
     uint8_t fetch_done_new = (state_old.phase_tfetch >= 11) && (state_old.phase_tfetch <= 15);
     if (vid_rst_evn_new || XYMU_RENDERINGn_new || line_rst_odd_new || (state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state)) fetch_done_new = 0;
     if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new) {
@@ -1488,13 +1488,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_evn_new || XYMU_RENDERINGn_new || line_rst_odd_new || (state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state)) fetch_done_new = 0;
   wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;
   wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !XYMU_RENDERINGn_new;
-  auto RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state;
-  auto RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
+  //auto RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state;
+  //auto RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
 
   wire NYXU_BFETCH_RSTn_new = (line_rst_odd_new || vid_rst_evn_new || !scan_done_trig_new) && !(state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) && !TEVO_WIN_FETCH_TRIGp_new;
 
   //----------------------------------------
-  
+
 
 
   //----------------------------------------
@@ -1929,13 +1929,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pins_vram_ctrl_oen_new = 1;
   }
   else if (!XYMU_RENDERINGn_new) {
-    
+
     if (vid_rst_evn_old) {
       pins_vram_ctrl_csn_new = 0;
       pins_vram_ctrl_oen_new = state_new.phase_tfetch < 12;
     }
     else {
-      
+
       pins_vram_ctrl_csn_new = 0;
       if (state_new.phase_tfetch < 12) {
         pins_vram_ctrl_csn_new = 1;
@@ -2808,7 +2808,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       state_new.sys_rst.AFER_SYS_RSTp.qp_any(),
       state_new.sys_rst.ASOL_POR_DONEn.qp_any(),
-      
+
       state_new.sys_clk.AVET_AxCxExGx.out_any(),
       state_new.sys_clk.AFUR_ABCDxxxx.qn_any(),
       state_new.sys_clk.ALEF_xBCDExxx.qp_any(),

@@ -440,7 +440,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   auto& view = view_control.view_smooth_snap;
 
   uint64_t phase_total_old = sys.gb_phase_total_old;
-  uint64_t phase_total_new = sys.gb_phase_total_new;
+  //uint64_t phase_total_new = sys.gb_phase_total_new;
 
   //gb_thread->pause();
 
@@ -810,11 +810,11 @@ Step controls:
 
   if (1) {
     static uint8_t buf[256*256];
-    bool scroll = false;
-    bool raw_sound = true;
+    //bool scroll = false;
+    //bool raw_sound = true;
 
-    auto audio_l = mem.audio_l;
-    auto audio_r = mem.audio_r;
+    //auto audio_l = mem.audio_l;
+    //auto audio_r = mem.audio_r;
     auto audio_1 = mem.audio_1;
     auto audio_2 = mem.audio_2;
     auto audio_3 = mem.audio_3;

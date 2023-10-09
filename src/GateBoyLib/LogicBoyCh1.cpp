@@ -48,8 +48,8 @@ void tick_ch1_fast(
   wire SIG_IN_CPU_DBUS_FREE
 )
 {
-  auto addr = bit_pack(cpu_abus_new);
-  auto dbus_old = bit_pack(cpu_dbus_old);
+  //auto addr = bit_pack(cpu_abus_new);
+  //auto dbus_old = bit_pack(cpu_dbus_old);
   bool apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
 
   /*_p01.ABOL*/ wire ABOL_CLKREQn = not1(SIG_CPU_CLKREQ);
@@ -104,7 +104,7 @@ void tick_ch1_fast(
 
   //----------
   // Trigger
-  
+
   {
     /*#p13.EZEC*/ ch1_new.EZEC_CH1_TRIGp.dff17(DOVA_ABCDxxxx, !apu_rst, ch1_old.DUPE_NR14_TRIGp.qp_any());
 

@@ -1,38 +1,20 @@
-################################################################################
+platform=X64
+target=DEBUG
+#target=RELEASE
+
+includes = ${includes} -Isymlinks/metrolib
+includes = ${includes} -Isrc
 
 # we define SIM_AUDIO in config.h otherwise VSCode gets confused about what's
 # enabled and what's not
 #-DSIM_AUDIO
 
-build_mode   = -DCONFIG_DEBUG -O0
-#build_mode   = -DCONFIG_RELEASE -O3
-#build_mode   = -DCONFIG_FASTMODE -O3
-
-#default_gpp      = g++ -g -MMD -std=gnu++2a -Wunused-variable -Werror
-default_gpp      = g++ -g -MMD -std=gnu++2a
-default_gcc      = gcc -g -MMD
-default_includes = -Isrc -Isymlinks -Isymlinks/metrolib -Isymlinks/metron
+include symlinks/metrolib/ninja/config_ALL.ninja
+include symlinks/metrolib/ninja/config_${platform}.ninja
+include symlinks/metrolib/ninja/config_${target}.ninja
+include symlinks/metrolib/ninja/rules.ninja
 
 ################################################################################
-
-rule compile_cpp
-  command = ${default_gpp} ${build_mode} ${default_includes} ${includes} -MF ${out}.d -c ${in} -o ${out}
-  depfile = ${out}.d
-  deps = gcc
-
-rule compile_c
-  command = ${default_gcc} ${build_mode} ${default_includes} ${includes} -MF ${out}.d -c ${in} -o ${out}
-  depfile = ${out}.d
-  deps = gcc
-
-rule link
-  command = ${default_gpp} ${build_mode} ${in} ${libs} -o ${out}
-
-rule lib
-  command = ar rcs ${out} ${in}
-
-rule run_command
-  command = $command
 
 build symlinks/metrolib/bin/metrolib/libappbase.a : run_command
   command = ninja -C symlinks/metrolib
@@ -45,7 +27,7 @@ build symlinks/metrolib/bin/metrolib/libcore.a : run_command
 
 build obj/GateBoyApp.o : compile_cpp src/GateBoyApp/GateBoyApp.cpp
 
-build bin/GateBoyApp : link $
+build bin/GateBoyApp : c_binary $
   obj/GateBoyApp.o $
   obj/glad.o $
   bin/GateBoyLib.a $
@@ -54,14 +36,14 @@ build bin/GateBoyApp : link $
   symlinks/metrolib/bin/metrolib/libcore.a $
   symlinks/metrolib/bin/metrolib/libgameboy.a $
   bin/imgui.a
-  libs=-lSDL2 -ldl -lpthread
+  libraries=-lSDL2 -ldl -lpthread
 
 ################################################################################
 # MetroBoyApp
 
 build obj/MetroBoyApp.o : compile_cpp src/MetroBoyApp/MetroBoyApp.cpp
 
-build bin/MetroBoyApp : link $
+build bin/MetroBoyApp : c_binary $
   obj/MetroBoyApp.o $
   obj/glad.o $
   bin/MetroBoyLib.a $
@@ -70,7 +52,7 @@ build bin/MetroBoyApp : link $
   symlinks/metrolib/bin/metrolib/libcore.a $
   symlinks/metrolib/bin/metrolib/libgameboy.a $
   bin/imgui.a
-  libs=-lSDL2
+  libraries=-lSDL2
 
 ################################################################################
 # GateBoyLib
@@ -117,7 +99,7 @@ build obj/GateBoyLib/LogicBoyCh2.o          : compile_cpp src/GateBoyLib/LogicBo
 build obj/GateBoyLib/LogicBoyCh3.o          : compile_cpp src/GateBoyLib/LogicBoyCh3.cpp
 build obj/GateBoyLib/LogicBoyCh4.o          : compile_cpp src/GateBoyLib/LogicBoyCh4.cpp
 
-build bin/GateBoyLib.a : lib $
+build bin/GateBoyLib.a : c_library $
   obj/GateBoyLib/Gates.o $
   obj/GateBoyLib/Probe.o $
   obj/GateBoyLib/Utils.o $
@@ -176,7 +158,7 @@ build obj/MetroBoyTimer.o      : compile_cpp src/MetroBoyLib/MetroBoyTimer.cpp
 build obj/MetroBoyVRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyVRAM.cpp
 build obj/MetroBoyZRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyZRAM.cpp
 
-build bin/MetroBoyLib.a : lib $
+build bin/MetroBoyLib.a : c_library $
   obj/MetroBoy.o $
   obj/MetroBoyBootrom.o $
   obj/MetroBoyCart.o $
@@ -201,7 +183,7 @@ build obj/imgui_draw.o    : compile_cpp symlinks/imgui/imgui_draw.cpp
 build obj/imgui_tables.o  : compile_cpp symlinks/imgui/imgui_tables.cpp
 build obj/imgui_widgets.o : compile_cpp symlinks/imgui/imgui_widgets.cpp
 
-build bin/imgui.a : lib $
+build bin/imgui.a : c_library $
   obj/imgui.o $
   obj/imgui_demo.o $
   obj/imgui_draw.o $
@@ -213,13 +195,13 @@ build bin/imgui.a : lib $
 
 build obj/GateBoyTests.o : compile_cpp src/GateBoyTests/GateBoyTests.cpp
 
-build bin/GateBoyTests : link $
+build bin/GateBoyTests : c_binary $
   obj/GateBoyTests.o $
   bin/GateBoyLib.a $
   symlinks/metrolib/bin/metrolib/libaudio.a $
   symlinks/metrolib/bin/metrolib/libcore.a $
   symlinks/metrolib/bin/metrolib/libgameboy.a
-  libs=-lSDL2
+  libraries=-lSDL2
 
 ################################################################################
 # MetroBoyTests
@@ -229,7 +211,7 @@ build obj/test_codegen.o    : compile_cpp src/MetroBoyTests/test_codegen.cpp
 build obj/test_mooneye.o    : compile_cpp src/MetroBoyTests/test_mooneye.cpp
 build obj/test_screenshot.o : compile_cpp src/MetroBoyTests/test_screenshot.cpp
 
-build bin/MetroBoyTests : link $
+build bin/MetroBoyTests : c_binary $
   obj/MetroBoyTests.o $
   obj/test_codegen.o $
   obj/test_mooneye.o $

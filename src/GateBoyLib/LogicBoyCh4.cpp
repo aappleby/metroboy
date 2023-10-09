@@ -85,11 +85,11 @@ void tick_ch4_fast(
   /*_p01.DOVA*/ wire DOVA_ABCDxxxx = not1(BUDE_xxxxEFGH);
 
 
-  wire HAMA_CLK_512K_old = not1(spu_old.JESO_CLK_512K.qp_any());
+  //wire HAMA_CLK_512K_old = not1(spu_old.JESO_CLK_512K.qp_any());
   wire HAMA_CLK_512K_new = not1(spu_new.JESO_CLK_512K.qp_any());
 
   wire BUFY_CLK_256_old = not1(spu_old.CARU_CLK_256.qp_any());
-  wire BYFE_CLK_128_old = not1(spu_old.BYLU_CLK_128.qp_any());
+  //wire BYFE_CLK_128_old = not1(spu_old.BYLU_CLK_128.qp_any());
 
   wire HORU_CLK_512_new = spu_new.BARA_CLK_512.qp_any();
   wire BUFY_CLK_256_new = not1(spu_new.CARU_CLK_256.qp_any());
@@ -184,7 +184,7 @@ void tick_ch4_fast(
   auto len_old = bit_pack(&ch4_new.DANO_NR41_LEN0p, 6);
   auto len_new = len_old;
 
-  // fugo old cycle break 
+  // fugo old cycle break
   wire CUWA_LEN_CLKa_old = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256_old, ch4_old.CUNY_NR44_LEN_ENp.qn_any());
   wire CUWA_LEN_CLKa_new = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256_new, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
 
@@ -234,7 +234,7 @@ void tick_ch4_fast(
 
 
   {
-   
+
     if (bit(ch4_new.GONE_CH4_TRIGp.qp_any())) {
       ch4_new.GENA_CH4_ACTIVEp.state = 1;
     }
@@ -277,7 +277,7 @@ void tick_ch4_fast(
   // Env
 
   auto env_timer_old = bit_pack(&ch4_old.CUNA_ENV_TIMER0n, 3) ^ 7;
-  auto env_delay_old = bit_pack(&ch4_old.EMOK_NR42_ENV_DELAY0p, 3);
+  //auto env_delay_old = bit_pack(&ch4_old.EMOK_NR42_ENV_DELAY0p, 3);
   auto env_delay_new = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 3);
 
   ch4_new.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512_new, env_timer_old != 7);
@@ -324,7 +324,7 @@ void tick_ch4_fast(
   }
 
 
-  /*#p20.FELO*/ wire FELO_ENV_CLK_old = bit(or3(ch4_old.FOSY_ENV_CLKp.qp_any(), env_delay_old == 0, ch4_old.EROX_ENV_RUNNINGn.qp_any()));
+  ///*#p20.FELO*/ wire FELO_ENV_CLK_old = bit(or3(ch4_old.FOSY_ENV_CLKp.qp_any(), env_delay_old == 0, ch4_old.EROX_ENV_RUNNINGn.qp_any()));
   /*#p20.FELO*/ wire FELO_ENV_CLK_new = bit(or3(ch4_new.FOSY_ENV_CLKp.qp_any(), env_delay_new == 0, ch4_new.EROX_ENV_RUNNINGn.qp_any()));
 
   // If GEKY_NR42_ENV_DIRp changes while the env clock is running, the volume can end up in a weird state...

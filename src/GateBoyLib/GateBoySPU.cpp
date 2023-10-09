@@ -63,7 +63,7 @@ void GateBoySPU::reset() {
   AVOK_xBCDExxx.state   = BIT_OLD | BIT_DRIVEN;
   AJER_AxxDExxH.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
   JESO_CLK_512K.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  
+
   BARA_CLK_512.state  = 0x1b;
   CARU_CLK_256.state  = 0x19;
   BYLU_CLK_128.state  = 0x18;
@@ -105,7 +105,7 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p10.BOGY*/ wire BOGY_CPU_WRp = not1(BAFU_CPU_WRn);
 
   memset(&reg_new.wave_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.wave_dbus));
-  
+
   /*_p10.DYTE*/ wire DYTE_A00n = not1(abus_new.BUS_CPU_A00p.out_new());
   /*_p10.AFOB*/ wire AFOB_A01n = not1(abus_new.BUS_CPU_A01p.out_new());
   /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
@@ -151,7 +151,7 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p09.KAME*/ wire KAME_APU_RSTn_new = not1(KEBA_APU_RSTp);
   /*_p01.BELA*/ wire BELA_APU_RSTn_new = not1(KEBA_APU_RSTp);
   /*_p09.ATYV*/ wire ATYV_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
+  ///*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
   /*#p15.BUWE*/ wire BUWE_APU_RSTn_new = not1(KEBA_APU_RSTp);
 
   /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());
@@ -275,14 +275,14 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     /*_p09.HEFA*/ wire HEFA_NR51_RDp = nor2(GEPA_ADDR_FF25n, AGUZ_CPU_RDn); // outline wrong color in die
     /*_p09.GUMU*/ wire GUMU_NR51_RDn = not1(HEFA_NR51_RDp);
 
-    /*_p09.BUZU*/ triwire BUZU_D0 = tri6_nn(GUMU_NR51_RDn, spu_new.ANEV_NR51_RCH1_ENp.qn_new()); 
-    /*_p09.CAPU*/ triwire CAPU_D1 = tri6_nn(GUMU_NR51_RDn, spu_new.BOGU_NR51_RCH2_ENp.qn_new()); 
-    /*_p09.CAGA*/ triwire CAGA_D2 = tri6_nn(GUMU_NR51_RDn, spu_new.BAFO_NR51_RCH3_ENp.qn_new()); 
-    /*_p09.BOCA*/ triwire BOCA_D3 = tri6_nn(GUMU_NR51_RDn, spu_new.ATUF_NR51_RCH4_ENp.qn_new()); 
-    /*_p09.CAVU*/ triwire CAVU_D4 = tri6_nn(GUMU_NR51_RDn, spu_new.BUME_NR51_LCH1_ENp.qn_new()); 
-    /*_p09.CUDU*/ triwire CUDU_D5 = tri6_nn(GUMU_NR51_RDn, spu_new.BOFA_NR51_LCH2_ENp.qn_new()); 
-    /*_p09.CADA*/ triwire CADA_D6 = tri6_nn(GUMU_NR51_RDn, spu_new.BEFO_NR51_LCH3_ENp.qn_new()); 
-    /*_p09.CERE*/ triwire CERE_D7 = tri6_nn(GUMU_NR51_RDn, spu_new.BEPU_NR51_LCH4_ENp.qn_new()); 
+    /*_p09.BUZU*/ triwire BUZU_D0 = tri6_nn(GUMU_NR51_RDn, spu_new.ANEV_NR51_RCH1_ENp.qn_new());
+    /*_p09.CAPU*/ triwire CAPU_D1 = tri6_nn(GUMU_NR51_RDn, spu_new.BOGU_NR51_RCH2_ENp.qn_new());
+    /*_p09.CAGA*/ triwire CAGA_D2 = tri6_nn(GUMU_NR51_RDn, spu_new.BAFO_NR51_RCH3_ENp.qn_new());
+    /*_p09.BOCA*/ triwire BOCA_D3 = tri6_nn(GUMU_NR51_RDn, spu_new.ATUF_NR51_RCH4_ENp.qn_new());
+    /*_p09.CAVU*/ triwire CAVU_D4 = tri6_nn(GUMU_NR51_RDn, spu_new.BUME_NR51_LCH1_ENp.qn_new());
+    /*_p09.CUDU*/ triwire CUDU_D5 = tri6_nn(GUMU_NR51_RDn, spu_new.BOFA_NR51_LCH2_ENp.qn_new());
+    /*_p09.CADA*/ triwire CADA_D6 = tri6_nn(GUMU_NR51_RDn, spu_new.BEFO_NR51_LCH3_ENp.qn_new());
+    /*_p09.CERE*/ triwire CERE_D7 = tri6_nn(GUMU_NR51_RDn, spu_new.BEPU_NR51_LCH4_ENp.qn_new());
 
     /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(BUZU_D0);
     /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(CAPU_D1);

@@ -547,30 +547,30 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // SIG_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   // SIG_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
 
-  /*_p07.TUNA*/ wire TUNA_0000_FDFF_old = nand7(
-    reg_old.cpu_abus.BUS_CPU_A15p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A14p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A13p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A12p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A11p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A10p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A09p.out_old()
-  );
-  /*_p25.SYRO*/ wire SYRO_FE00_FFFF_old = not1(TUNA_0000_FDFF_old);
+  ///*_p07.TUNA*/ wire TUNA_0000_FDFF_old = nand7(
+  //  reg_old.cpu_abus.BUS_CPU_A15p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A14p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A13p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A12p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A11p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A10p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A09p.out_old()
+  //);
+  ///*_p25.SYRO*/ wire SYRO_FE00_FFFF_old = not1(TUNA_0000_FDFF_old);
 
-  /*_p07.TULO*/ wire TULO_ADDR_BOOTROMp_old = nor8(
-    reg_old.cpu_abus.BUS_CPU_A15p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A14p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A13p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A12p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A11p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A10p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A09p.out_old(),
-    reg_old.cpu_abus.BUS_CPU_A08p.out_old()
-  );
+  ///*_p07.TULO*/ wire TULO_ADDR_BOOTROMp_old = nor8(
+  //  reg_old.cpu_abus.BUS_CPU_A15p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A14p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A13p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A12p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A11p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A10p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A09p.out_old(),
+  //  reg_old.cpu_abus.BUS_CPU_A08p.out_old()
+  //);
 
-  /*_p07.TERA*/ wire TERA_BOOT_BITp_old  = not1(reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-  /*_p07.TUTU*/ wire TUTU_READ_BOOTROMp_old = and2(TERA_BOOT_BITp_old, TULO_ADDR_BOOTROMp_old);
+  ///*_p07.TERA*/ wire TERA_BOOT_BITp_old  = not1(reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
+  ///*_p07.TUTU*/ wire TUTU_READ_BOOTROMp_old = and2(TERA_BOOT_BITp_old, TULO_ADDR_BOOTROMp_old);
 
 #endif
 
@@ -587,10 +587,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     probe("cpu_write", write & 1);
 
     wire req_addr_boot = (addr >= 0x0000) && (addr <= 0x00FF) && !(reg_old.cpu_signals.TEPU_BOOT_BITn.state & 1);
-    wire req_addr_rom  = (addr >= 0x0000) && (addr <= 0x7FFF);
+    //wire req_addr_rom  = (addr >= 0x0000) && (addr <= 0x7FFF);
     wire req_addr_vram = (addr >= 0x8000) && (addr <= 0x9FFF);
-    wire req_addr_ram  = (addr >= 0xA000) && (addr <= 0xFDFF);
-    wire req_addr_oam  = (addr >= 0xFE00) && (addr <= 0xFEFF);
+    //wire req_addr_ram  = (addr >= 0xA000) && (addr <= 0xFDFF);
+    //wire req_addr_oam  = (addr >= 0xFE00) && (addr <= 0xFEFF);
     wire req_addr_hi   = (addr >= 0xFE00);
 
     reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DH && (read || (write && addr >= 0xFF10))) & 1) | BIT_DRIVEN | BIT_NEW;

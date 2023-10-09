@@ -239,29 +239,29 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire /*TEVO_WIN_F
   // Win map counters & win map read address
 
   {
-    /*#p27.NOFU*/ wire NOFU_BFETCH_S2n_new     = not1(reg_new.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_new());
-    /*#p27.NAKO*/ wire NAKO_BFETCH_S1n_new     = not1(reg_new.tfetch_counter.MESU_BFETCH_S1p_odd.qp_new());
-    /*_p27.NOGU*/ wire NOGU_BFETCH_01p_new     = nand2(NAKO_BFETCH_S1n_new, NOFU_BFETCH_S2n_new);
-    /*_p27.NENY*/ wire NENY_BFETCH_01n_new     = not1(NOGU_BFETCH_01p_new);
-    /*_p27.LUSU*/ wire LUSU_FETCHINGn_new      = not1(reg_new.tfetch_control.LONY_TFETCHINGp.qp_new());
-    /*_p27.LENA*/ wire LENA_BFETCHINGp_new     = not1(LUSU_FETCHINGn_new);
-    /*_p27.POTU*/ wire POTU_BGW_MAP_READp_new  = and2(LENA_BFETCHINGp_new, NENY_BFETCH_01n_new);
+    ///*#p27.NOFU*/ wire NOFU_BFETCH_S2n_new     = not1(reg_new.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_new());
+    ///*#p27.NAKO*/ wire NAKO_BFETCH_S1n_new     = not1(reg_new.tfetch_counter.MESU_BFETCH_S1p_odd.qp_new());
+    ///*_p27.NOGU*/ wire NOGU_BFETCH_01p_new     = nand2(NAKO_BFETCH_S1n_new, NOFU_BFETCH_S2n_new);
+    ///*_p27.NENY*/ wire NENY_BFETCH_01n_new     = not1(NOGU_BFETCH_01p_new);
+    ///*_p27.LUSU*/ wire LUSU_FETCHINGn_new      = not1(reg_new.tfetch_control.LONY_TFETCHINGp.qp_new());
+    ///*_p27.LENA*/ wire LENA_BFETCHINGp_new     = not1(LUSU_FETCHINGn_new);
+    ///*_p27.POTU*/ wire POTU_BGW_MAP_READp_new  = and2(LENA_BFETCHINGp_new, NENY_BFETCH_01n_new);
 
-    /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_old = not1(reg_old.win_ctrl.RYDY_WIN_HITp.out_old());
-    /*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
-    /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_old = nor2(reg_old.win_ctrl.RYFA_WIN_FETCHn_A.qn_old(), reg_old.win_ctrl.RENE_WIN_FETCHn_B.qp_old());
-    /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, reg_old.win_ctrl.SOVY_WIN_HITp.qp_old());
-    /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_old = not1(TUXY_WIN_FIRST_TILEne_old);
-    /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_old = not1(reg_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_old());
-    /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(reg_old.XYMU_RENDERING_LATCHn.qn_old(), ROMO_PRELOAD_DONEn_evn_old, reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old(), reg_old.tfetch_control.PORY_FETCH_DONEp_odd.qp_old());
-    /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_old = not1(SUVU_PRELOAD_DONE_TRIGn_old);
-    /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old, SUZU_WIN_FIRST_TILEne_old, TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
-    /*#p27.NOCU*/ wire NOCU_WIN_MODEn_old = not1(reg_old.win_ctrl.PYNU_WIN_MODE_LATCHp.qp_old());
-    /*_p27.PORE*/ wire PORE_WIN_MODEp_old = not1(NOCU_WIN_MODEn_old);
-    /*_p27.VETU*/ wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PORE_WIN_MODEp_old);
+    ///*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_old = not1(reg_old.win_ctrl.RYDY_WIN_HITp.out_old());
+    ///*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
+    ///*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_old = nor2(reg_old.win_ctrl.RYFA_WIN_FETCHn_A.qn_old(), reg_old.win_ctrl.RENE_WIN_FETCHn_B.qp_old());
+    ///*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, reg_old.win_ctrl.SOVY_WIN_HITp.qp_old());
+    ///*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_old = not1(TUXY_WIN_FIRST_TILEne_old);
+    ///*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_old = not1(reg_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_old());
+    ///*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(reg_old.XYMU_RENDERING_LATCHn.qn_old(), ROMO_PRELOAD_DONEn_evn_old, reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old(), reg_old.tfetch_control.PORY_FETCH_DONEp_odd.qp_old());
+    ///*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_old = not1(SUVU_PRELOAD_DONE_TRIGn_old);
+    ///*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old, SUZU_WIN_FIRST_TILEne_old, TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
+    ///*#p27.NOCU*/ wire NOCU_WIN_MODEn_old = not1(reg_old.win_ctrl.PYNU_WIN_MODE_LATCHp.qp_old());
+    ///*_p27.PORE*/ wire PORE_WIN_MODEp_old = not1(NOCU_WIN_MODEn_old);
+    ///*_p27.VETU*/ wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PORE_WIN_MODEp_old);
 
-    /*#p25.XEZE*/ wire XEZE_WIN_MAP_READp_new = and2(POTU_BGW_MAP_READp_new, PORE_WIN_MODEp_new);
-    /*#p25.WUKO*/ wire WUKO_WIN_MAP_READn_new = not1(XEZE_WIN_MAP_READp_new);
+    ///*#p25.XEZE*/ wire XEZE_WIN_MAP_READp_new = and2(POTU_BGW_MAP_READp_new, PORE_WIN_MODEp_new);
+    ///*#p25.WUKO*/ wire WUKO_WIN_MAP_READn_new = not1(XEZE_WIN_MAP_READp_new);
     /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_new = not1(reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new());
     /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_xxx_new = nand4(reg_new.XYMU_RENDERING_LATCHn.qn_new(), ROMO_PRELOAD_DONEn_evn_new, reg_new.tfetch_control.NYKA_FETCH_DONEp_evn.qp_new(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new());
     /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_xxx_new = not1(SUVU_PRELOAD_DONE_TRIGn_xxx_new);
@@ -344,10 +344,10 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire /*TEVO_WIN_F
     /*#p27.NOFU*/ wire NOFU_BFETCH_S2n_new     = not1(reg_new.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_new());
     /*#p27.NAKO*/ wire NAKO_BFETCH_S1n_new     = not1(reg_new.tfetch_counter.MESU_BFETCH_S1p_odd.qp_new());
     /*_p27.NOGU*/ wire NOGU_BFETCH_01p_new     = nand2(NAKO_BFETCH_S1n_new, NOFU_BFETCH_S2n_new);
-    /*_p27.NENY*/ wire NENY_BFETCH_01n_new     = not1(NOGU_BFETCH_01p_new);
+    ///*_p27.NENY*/ wire NENY_BFETCH_01n_new     = not1(NOGU_BFETCH_01p_new);
     /*_p27.LUSU*/ wire LUSU_FETCHINGn_new      = not1(reg_new.tfetch_control.LONY_TFETCHINGp.qp_new());
     /*_p27.LENA*/ wire LENA_BFETCHINGp_new     = not1(LUSU_FETCHINGn_new);
-    /*_p27.POTU*/ wire POTU_BGW_MAP_READp_new  = and2(LENA_BFETCHINGp_new, NENY_BFETCH_01n_new);
+    ///*_p27.POTU*/ wire POTU_BGW_MAP_READp_new  = and2(LENA_BFETCHINGp_new, NENY_BFETCH_01n_new);
 
     /*_p27.NETA*/ wire NETA_BGW_TILE_READp_new = and2(LENA_BFETCHINGp_new, NOGU_BFETCH_01p_new);
     /*_p26.ASUL*/ wire ASUL_BG_TILE_READp_new  = and2(NETA_BGW_TILE_READp_new, AXAD_WIN_MODEn_new);
@@ -530,18 +530,18 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire /*TEVO_WIN_F
   // Vram control pins
 
   {
-    /*#p27.NOFU*/ wire NOFU_BFETCH_S2n_new     = not1(reg_new.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_new());
-    /*#p27.NAKO*/ wire NAKO_BFETCH_S1n_new     = not1(reg_new.tfetch_counter.MESU_BFETCH_S1p_odd.qp_new());
-    /*_p27.NOGU*/ wire NOGU_BFETCH_01p_new     = nand2(NAKO_BFETCH_S1n_new, NOFU_BFETCH_S2n_new);
-    /*_p27.NENY*/ wire NENY_BFETCH_01n_new     = not1(NOGU_BFETCH_01p_new);
+    ///*#p27.NOFU*/ wire NOFU_BFETCH_S2n_new     = not1(reg_new.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_new());
+    ///*#p27.NAKO*/ wire NAKO_BFETCH_S1n_new     = not1(reg_new.tfetch_counter.MESU_BFETCH_S1p_odd.qp_new());
+    ///*_p27.NOGU*/ wire NOGU_BFETCH_01p_new     = nand2(NAKO_BFETCH_S1n_new, NOFU_BFETCH_S2n_new);
+    ///*_p27.NENY*/ wire NENY_BFETCH_01n_new     = not1(NOGU_BFETCH_01p_new);
     /*_p27.LUSU*/ wire LUSU_FETCHINGn_new      = not1(reg_new.tfetch_control.LONY_TFETCHINGp.qp_new());
     /*_p27.LENA*/ wire LENA_BFETCHINGp_new     = not1(LUSU_FETCHINGn_new);
-    /*_p27.POTU*/ wire POTU_BGW_MAP_READp_new  = and2(LENA_BFETCHINGp_new, NENY_BFETCH_01n_new);
-    /*_p26.ACEN*/ wire ACEN_BG_MAP_READp_new   = and2(POTU_BGW_MAP_READp_new, AXAD_WIN_MODEn_new);
-    /*_p26.BAFY*/ wire BAFY_BG_MAP_READn_new   = not1(ACEN_BG_MAP_READp_new);
+    ///*_p27.POTU*/ wire POTU_BGW_MAP_READp_new  = and2(LENA_BFETCHINGp_new, NENY_BFETCH_01n_new);
+    ///*_p26.ACEN*/ wire ACEN_BG_MAP_READp_new   = and2(POTU_BGW_MAP_READp_new, AXAD_WIN_MODEn_new);
+    ///*_p26.BAFY*/ wire BAFY_BG_MAP_READn_new   = not1(ACEN_BG_MAP_READp_new);
     /*_p25.TUTO*/ wire TUTO_VRAM_DBGp_new    = and2(pins.sys.UNOR_MODE_DBG2p_new(), reg_new.sys_rst.SOTO_DBG_VRAMp.qn_new());
     /*#p25.RACO*/ wire RACO_DBG_VRAMn_new    = not1(TUTO_VRAM_DBGp_new);
-  
+
     /*#p04.LEBU*/ wire LEBU_DMA_A15n_new   = not1(reg_new.reg_dma.MARU_DMA_A15p.qp_new());
     /*#p04.MUDA*/ wire MUDA_DMA_VRAMp_new  = nor3(reg_new.reg_dma.PULA_DMA_A13p.qp_new(), reg_new.reg_dma.POKU_DMA_A14p.qp_new(), LEBU_DMA_A15n_new);
     /*#p04.MUHO*/ wire MUHO_DMA_VRAMp_new  = nand2(reg_new.MATU_DMA_RUNNINGp_odd.qp_new(), MUDA_DMA_VRAMp_new);
@@ -807,53 +807,3 @@ void VramDBus::reset() {
 }
 
 //-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

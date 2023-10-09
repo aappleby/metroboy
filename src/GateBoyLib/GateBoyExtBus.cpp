@@ -322,7 +322,7 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 
 
   auto RDn = bit0(pins.ctrl.PIN_79_RDn.qp_ext_new());
-  auto CSn = bit0(pins.ctrl.PIN_80_CSn.qp_ext_new());
+  //auto CSn = bit0(pins.ctrl.PIN_80_CSn.qp_ext_new());
   auto WRn = bit0(pins.ctrl.PIN_78_WRn.qp_ext_new());
 
   auto ext_addr = bit_pack_inv(pins.abus_lo) | (bit_pack_inv(pins.abus_hi) << 8);

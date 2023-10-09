@@ -1,0 +1,16 @@
+################################################################################
+# MetroBoyTests
+
+build obj/MetroBoyTests.o   : compile_cpp src/MetroBoyTests/MetroBoyTests.cpp
+build obj/test_codegen.o    : compile_cpp src/MetroBoyTests/test_codegen.cpp
+build obj/test_mooneye.o    : compile_cpp src/MetroBoyTests/test_mooneye.cpp
+build obj/test_screenshot.o : compile_cpp src/MetroBoyTests/test_screenshot.cpp
+
+build bin/MetroBoyTests : c_binary $
+  obj/MetroBoyTests.o $
+  obj/test_codegen.o $
+  obj/test_mooneye.o $
+  obj/test_screenshot.o $
+  bin/MetroBoyLib.a $
+  symlinks/metrolib/bin/metrolib/libcore.a $
+  symlinks/metrolib/bin/metrolib/libgameboy.a

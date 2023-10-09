@@ -1,0 +1,30 @@
+################################################################################
+# MetroBoyLib
+
+build obj/MetroBoy.o           : compile_cpp src/MetroBoyLib/MetroBoy.cpp
+build obj/MetroBoyBootrom.o    : compile_cpp src/MetroBoyLib/MetroBoyBootrom.cpp
+build obj/MetroBoyCart.o       : compile_cpp src/MetroBoyLib/MetroBoyCart.cpp
+build obj/MetroBoyDMA.o        : compile_cpp src/MetroBoyLib/MetroBoyDMA.cpp
+build obj/MetroBoyInterrupts.o : compile_cpp src/MetroBoyLib/MetroBoyInterrupts.cpp
+build obj/MetroBoyJoypad.o     : compile_cpp src/MetroBoyLib/MetroBoyJoypad.cpp
+build obj/MetroBoyOAM.o        : compile_cpp src/MetroBoyLib/MetroBoyOAM.cpp
+build obj/MetroBoyPPU.o        : compile_cpp src/MetroBoyLib/MetroBoyPPU.cpp
+build obj/MetroBoySerial.o     : compile_cpp src/MetroBoyLib/MetroBoySerial.cpp
+build obj/MetroBoyTimer.o      : compile_cpp src/MetroBoyLib/MetroBoyTimer.cpp
+build obj/MetroBoyVRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyVRAM.cpp
+build obj/MetroBoyZRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyZRAM.cpp
+
+build bin/MetroBoyLib.a : c_library $
+  obj/MetroBoy.o $
+  obj/MetroBoyBootrom.o $
+  obj/MetroBoyCart.o $
+  obj/MetroBoyDMA.o $
+  obj/MetroBoyInterrupts.o $
+  obj/MetroBoyJoypad.o $
+  obj/MetroBoyOAM.o $
+  obj/MetroBoyPPU.o $
+  obj/MetroBoySerial.o $
+  obj/MetroBoyTimer.o $
+  obj/MetroBoyVRAM.o $
+  obj/MetroBoyZRAM.o $
+

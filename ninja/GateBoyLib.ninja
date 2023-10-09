@@ -1,0 +1,87 @@
+################################################################################
+# GateBoyLib
+
+build obj/GateBoyLib/Gates.o                : compile_cpp src/GateBoyLib/Gates.cpp
+build obj/GateBoyLib/Probe.o                : compile_cpp src/GateBoyLib/Probe.cpp
+build obj/GateBoyLib/Utils.o                : compile_cpp src/GateBoyLib/Utils.cpp
+build obj/GateBoyLib/GateBoy.o              : compile_cpp src/GateBoyLib/GateBoy.cpp
+build obj/GateBoyLib/GateBoyCh1.o           : compile_cpp src/GateBoyLib/GateBoyCh1.cpp
+build obj/GateBoyLib/GateBoyCh2.o           : compile_cpp src/GateBoyLib/GateBoyCh2.cpp
+build obj/GateBoyLib/GateBoyCh3.o           : compile_cpp src/GateBoyLib/GateBoyCh3.cpp
+build obj/GateBoyLib/GateBoyCh4.o           : compile_cpp src/GateBoyLib/GateBoyCh4.cpp
+build obj/GateBoyLib/GateBoyClocks.o        : compile_cpp src/GateBoyLib/GateBoyClocks.cpp
+build obj/GateBoyLib/GateBoyCpuBus.o        : compile_cpp src/GateBoyLib/GateBoyCpuBus.cpp
+build obj/GateBoyLib/GateBoyDMA.o           : compile_cpp src/GateBoyLib/GateBoyDMA.cpp
+build obj/GateBoyLib/GateBoyDumper.o        : compile_cpp src/GateBoyLib/GateBoyDumper.cpp
+build obj/GateBoyLib/GateBoyExtBus.o        : compile_cpp src/GateBoyLib/GateBoyExtBus.cpp
+build obj/GateBoyLib/GateBoyInterrupts.o    : compile_cpp src/GateBoyLib/GateBoyInterrupts.cpp
+build obj/GateBoyLib/GateBoyJoypad.o        : compile_cpp src/GateBoyLib/GateBoyJoypad.cpp
+build obj/GateBoyLib/GateBoyLCD.o           : compile_cpp src/GateBoyLib/GateBoyLCD.cpp
+build obj/GateBoyLib/GateBoyOamBus.o        : compile_cpp src/GateBoyLib/GateBoyOamBus.cpp
+build obj/GateBoyLib/GateBoyPair.o          : compile_cpp src/GateBoyLib/GateBoyPair.cpp
+build obj/GateBoyLib/GateBoyPins.o          : compile_cpp src/GateBoyLib/GateBoyPins.cpp
+build obj/GateBoyLib/GateBoyPixPipe.o       : compile_cpp src/GateBoyLib/GateBoyPixPipe.cpp
+build obj/GateBoyLib/GateBoyRegisters.o     : compile_cpp src/GateBoyLib/GateBoyRegisters.cpp
+build obj/GateBoyLib/GateBoyReset.o         : compile_cpp src/GateBoyLib/GateBoyReset.cpp
+build obj/GateBoyLib/GateBoySerial.o        : compile_cpp src/GateBoyLib/GateBoySerial.cpp
+build obj/GateBoyLib/GateBoySpriteFetcher.o : compile_cpp src/GateBoyLib/GateBoySpriteFetcher.cpp
+build obj/GateBoyLib/GateBoySpriteScanner.o : compile_cpp src/GateBoyLib/GateBoySpriteScanner.cpp
+build obj/GateBoyLib/GateBoySpriteStore.o   : compile_cpp src/GateBoyLib/GateBoySpriteStore.cpp
+build obj/GateBoyLib/GateBoySPU.o           : compile_cpp src/GateBoyLib/GateBoySPU.cpp
+build obj/GateBoyLib/GateBoyState.o         : compile_cpp src/GateBoyLib/GateBoyState.cpp
+build obj/GateBoyLib/GateBoyThread.o        : compile_cpp src/GateBoyLib/GateBoyThread.cpp
+build obj/GateBoyLib/GateBoyTileFetcher.o   : compile_cpp src/GateBoyLib/GateBoyTileFetcher.cpp
+build obj/GateBoyLib/GateBoyTimer.o         : compile_cpp src/GateBoyLib/GateBoyTimer.cpp
+build obj/GateBoyLib/GateBoyVramBus.o       : compile_cpp src/GateBoyLib/GateBoyVramBus.cpp
+build obj/GateBoyLib/GateBoyWaveBus.o       : compile_cpp src/GateBoyLib/GateBoyWaveBus.cpp
+build obj/GateBoyLib/GateBoyZramBus.o       : compile_cpp src/GateBoyLib/GateBoyZramBus.cpp
+build obj/GateBoyLib/LogicBoy.o             : compile_cpp src/GateBoyLib/LogicBoy.cpp
+build obj/GateBoyLib/LogicBoyState.o        : compile_cpp src/GateBoyLib/LogicBoyState.cpp
+build obj/GateBoyLib/LogicBoySPU.o          : compile_cpp src/GateBoyLib/LogicBoySPU.cpp
+build obj/GateBoyLib/LogicBoyCh1.o          : compile_cpp src/GateBoyLib/LogicBoyCh1.cpp
+build obj/GateBoyLib/LogicBoyCh2.o          : compile_cpp src/GateBoyLib/LogicBoyCh2.cpp
+build obj/GateBoyLib/LogicBoyCh3.o          : compile_cpp src/GateBoyLib/LogicBoyCh3.cpp
+build obj/GateBoyLib/LogicBoyCh4.o          : compile_cpp src/GateBoyLib/LogicBoyCh4.cpp
+
+build bin/GateBoyLib.a : c_library $
+  obj/GateBoyLib/Gates.o $
+  obj/GateBoyLib/Probe.o $
+  obj/GateBoyLib/Utils.o $
+  obj/GateBoyLib/GateBoy.o $
+  obj/GateBoyLib/GateBoyCh1.o $
+  obj/GateBoyLib/GateBoyCh2.o $
+  obj/GateBoyLib/GateBoyCh3.o $
+  obj/GateBoyLib/GateBoyCh4.o $
+  obj/GateBoyLib/GateBoyClocks.o $
+  obj/GateBoyLib/GateBoyCpuBus.o $
+  obj/GateBoyLib/GateBoyDMA.o $
+  obj/GateBoyLib/GateBoyDumper.o $
+  obj/GateBoyLib/GateBoyExtBus.o $
+  obj/GateBoyLib/GateBoyInterrupts.o $
+  obj/GateBoyLib/GateBoyJoypad.o $
+  obj/GateBoyLib/GateBoyLCD.o $
+  obj/GateBoyLib/GateBoyOamBus.o $
+  obj/GateBoyLib/GateBoyPair.o $
+  obj/GateBoyLib/GateBoyPins.o $
+  obj/GateBoyLib/GateBoyPixPipe.o $
+  obj/GateBoyLib/GateBoyRegisters.o $
+  obj/GateBoyLib/GateBoyReset.o $
+  obj/GateBoyLib/GateBoySerial.o $
+  obj/GateBoyLib/GateBoySpriteFetcher.o $
+  obj/GateBoyLib/GateBoySpriteScanner.o $
+  obj/GateBoyLib/GateBoySpriteStore.o $
+  obj/GateBoyLib/GateBoySPU.o $
+  obj/GateBoyLib/GateBoyState.o $
+  obj/GateBoyLib/GateBoyThread.o $
+  obj/GateBoyLib/GateBoyTileFetcher.o $
+  obj/GateBoyLib/GateBoyTimer.o $
+  obj/GateBoyLib/GateBoyVramBus.o $
+  obj/GateBoyLib/GateBoyWaveBus.o $
+  obj/GateBoyLib/GateBoyZramBus.o $
+  obj/GateBoyLib/LogicBoy.o $
+  obj/GateBoyLib/LogicBoyState.o $
+  obj/GateBoyLib/LogicBoySPU.o $
+  obj/GateBoyLib/LogicBoyCh1.o $
+  obj/GateBoyLib/LogicBoyCh2.o $
+  obj/GateBoyLib/LogicBoyCh3.o $
+  obj/GateBoyLib/LogicBoyCh4.o

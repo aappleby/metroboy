@@ -1,0 +1,16 @@
+################################################################################
+# GateBoyApp
+
+build obj/GateBoyApp.o : compile_cpp src/GateBoyApp/GateBoyApp.cpp
+
+build bin/GateBoyApp : c_binary $
+  obj/GateBoyApp.o $
+  obj/glad.o $
+  bin/GateBoyLib.a $
+  symlinks/metrolib/bin/metrolib/libappbase.a $
+  symlinks/metrolib/bin/metrolib/libaudio.a $
+  symlinks/metrolib/bin/metrolib/libcore.a $
+  symlinks/metrolib/bin/metrolib/libgameboy.a $
+  bin/imgui.a
+  libraries=-lSDL2 -ldl -lpthread
+

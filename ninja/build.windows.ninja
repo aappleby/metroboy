@@ -1,0 +1,35 @@
+################################################################################
+
+# we define SIM_AUDIO in config.h otherwise VSCode gets confused about what's
+# enabled and what's not
+#-DSIM_AUDIO
+
+# not having NDEBUG turns assert()s on
+
+build_mode = /O2 /D CONFIG_RELEASE /D NDEBUG /D _CRT_SECURE_NO_WARNINGS
+#build_mode = /D CONFIG_RELEASE /D _CRT_SECURE_NO_WARNINGS
+#build_mode = /D CONFIG_DEBUG /D _CRT_SECURE_NO_WARNINGS
+
+# $(IntDir)vc$(PlatformToolsetVersion).pdb
+
+default_gpp = CL.exe /nologo /std:c++latest /EHsc /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2 /sdl- /Gm- /GS- /Z7 /DEBUG /FS /GL
+default_gcc = CL.exe /nologo /std:c17 /showIncludes
+
+default_includes = /Isrc /Isymlinks /Isymlinks/glad
+global_libs      = src/SDL2.lib
+
+################################################################################
+
+build bin/GateBoyApp.exe    : copy bin/GateBoyApp
+build bin/GateBoyTests.exe  : copy bin/GateBoyTests
+build bin/MetroBoyApp.exe   : copy bin/MetroBoyApp
+build bin/MetroBoyTests.exe : copy bin/MetroBoyTests
+build bin/MetronicaApp.exe  : copy bin/MetronicaApp
+
+
+
+################################################################################
+# Other libs
+
+build obj/glad.o          : compile_cpp symlinks/glad/glad.c
+

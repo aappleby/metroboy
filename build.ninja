@@ -1,6 +1,7 @@
-platform=X64
 target=DEBUG
 #target=RELEASE
+
+toolchain=x86_64-linux-gnu
 
 includes = ${includes} -Isymlinks/metrolib
 includes = ${includes} -Isrc
@@ -10,7 +11,6 @@ includes = ${includes} -Isrc
 #-DSIM_AUDIO
 
 include symlinks/metrolib/ninja/config_ALL.ninja
-include symlinks/metrolib/ninja/config_${platform}.ninja
 include symlinks/metrolib/ninja/config_${target}.ninja
 include symlinks/metrolib/ninja/rules.ninja
 

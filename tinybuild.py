@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import os
+import sys
+import multiprocessing
 
 def swap_ext(name, new_ext):
     return os.path.splitext(name)[0] + new_ext
@@ -10,9 +12,12 @@ config = {
   "swap_ext"   : swap_ext
 }
 
+pool = None
+
 ################################################################################
 
 def needs_rebuild(file_in, file_out):
+  global config
   if type(file_out) is list:
     for f in file_out:
       if needs_rebuild(file_in, f):
@@ -30,18 +35,21 @@ def needs_rebuild(file_in, file_out):
     return False;
 
   if not os.path.exists(file_out):
-    print(f"Rebuild caused by missing {file_out}")
+    if config['verbose']:
+      print(f"Rebuild caused by missing {file_out}")
     return True;
 
   if os.path.getmtime(file_in) > os.path.getmtime(file_out):
-    print(f"Rebuild caused by changed {file_in}")
+    if config['verbose']:
+      print(f"Rebuild caused by changed {file_in}")
     return True
 
   deps_file = swap_ext(file_out, ".d")
   if os.path.exists(deps_file):
     for dep in open(deps_file).read().split():
       if os.path.exists(dep) and os.path.getmtime(dep) > os.path.getmtime(file_out):
-        print(f"Rebuild caused by changed {dep}")
+        if config['verbose']:
+          print(f"Rebuild caused by changed {dep}")
         return True
 
   return False
@@ -55,7 +63,7 @@ def run_command(files_in, files_out, arg_dict):
   arg_dict["files_out"] = files_out
 
   if not needs_rebuild(files_in, files_out):
-    return
+    return 0
 
   for file_out in files_out:
     os.makedirs(os.path.dirname(file_out), exist_ok = True)
@@ -69,7 +77,24 @@ def run_command(files_in, files_out, arg_dict):
     print(formatted_command)
 
   if os.system(formatted_command):
-    print(f"Failed command: \"{formatted_command}\"")
+    print(f"Command failed: \"{formatted_command}\"")
+    return 1
+  return 0
+
+################################################################################
+
+def run_parallel(files_in, files_out, arg_dict):
+  global pool
+  if pool is None:
+    pool = multiprocessing.Pool(multiprocessing.cpu_count())
+  results = []
+  for i in range(len(files_in)):
+    result = pool.apply_async(run_command, [[files_in[i]], [files_out[i]], arg_dict])
+    results.append(result)
+  sum = 0
+  for result in results:
+    sum = sum + result.get()
+  return sum
 
 ################################################################################
 
@@ -86,11 +111,14 @@ def command(**kwargs):
     files_in  = files_in  if type(files_in)  is list else [files_in]
     files_out = files_out if type(files_out) is list else [files_out]
 
+    result = 0
     if len(files_in) == len(files_out):
-      for i in range(len(files_in)):
-        run_command([files_in[i]], [files_out[i]], local_kwargs)
+      result = run_parallel(files_in, files_out, local_kwargs)
     else:
-      run_command(files_in, files_out, local_kwargs)
+      result = run_command(files_in, files_out, local_kwargs)
+    if result != 0:
+      print("Aborting build")
+      sys.exit(result)
 
   return action
 

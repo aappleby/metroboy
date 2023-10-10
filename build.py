@@ -4,7 +4,7 @@ import glob
 import tinybuild
 
 tinybuild.config["toolchain"] = "x86_64-linux-gnu"
-tinybuild.config["verbose"]   = True
+tinybuild.config["verbose"]   = False
 
 ################################################################################
 
@@ -42,8 +42,8 @@ GateBoyLib_srcs = glob.glob("src/GateBoyLib/*.cpp")
 GateBoyLib_objs = ["obj/" + tinybuild.swap_ext(f, ".o") for f in GateBoyLib_srcs]
 GateBoyLib_lib  = "obj/src/GateBoyLib/GateBoyLib.a"
 
-#compile_cpp(GateBoyLib_srcs, GateBoyLib_objs)
-#c_library(GateBoyLib_objs, GateBoyLib_lib)
+compile_cpp(GateBoyLib_srcs, GateBoyLib_objs)
+c_library(GateBoyLib_objs, GateBoyLib_lib)
 
 MetroBoyLib_srcs = glob.glob("src/MetroBoyLib/*.cpp")
 MetroBoyLib_objs = ["obj/" + tinybuild.swap_ext(f, ".o") for f in MetroBoyLib_srcs]
@@ -52,9 +52,9 @@ MetroBoyLib_lib  = "obj/src/MetroBoyLib/MetroBoyLib.a"
 compile_cpp(MetroBoyLib_srcs, MetroBoyLib_objs)
 c_library(MetroBoyLib_objs, MetroBoyLib_lib)
 
-#compile_cpp("src/GateBoyApp/GateBoyApp.cpp", "obj/src/GateBoyApp/GateBoyApp.o")
+compile_cpp("src/GateBoyApp/GateBoyApp.cpp", "obj/src/GateBoyApp/GateBoyApp.o")
 
-#compile_c("symlinks/glad/glad.c", "obj/glad.o")
+compile_c("symlinks/glad/glad.c", "obj/glad.o")
 
 GateBoyApp_objs = [
   "obj/src/GateBoyApp/GateBoyApp.o",

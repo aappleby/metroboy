@@ -22,7 +22,7 @@ build symlinks/metrolib/bin/metrolib/libappbase.a : run_command
 build symlinks/metrolib/bin/metrolib/libcore.a : run_command
   command = ninja -C symlinks/metrolib
 
-build obj/glad.o          : compile_cpp symlinks/glad/glad.c
+build obj/glad.o : compile_cpp symlinks/glad/glad.c
 
 include ninja/imgui.ninja
 

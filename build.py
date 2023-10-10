@@ -1,94 +1,74 @@
 #!/usr/bin/python3
 
-import os
 import glob
-from collections.abc import Iterable
+import tinybuild
 
-def swap_ext(name, new_ext):
-    return os.path.splitext(name)[0] + new_ext
-
-def join_space(list):
-  return " ".join(list)
+tinybuild.config["toolchain"] = "x86_64-linux-gnu"
+tinybuild.config["verbose"]   = True
 
 ################################################################################
 
-def needs_rebuild(file_in, file_out):
-  if type(file_in) is list:
-    for f in file_in:
-      if needs_rebuild(f, file_out):
-        return True
-    return False
+compile_cpp = tinybuild.command(
+  command   = "{toolchain}-g++ {opts} {includes} {defines} -c {file_in} -o {file_out}",
+  desc      = "Compiling C++ {file_in} => {file_out}",
+  opts      = "-std=gnu++2a -Wunused-variable -Werror -MMD -g -O0",
+  includes  = "-Isymlinks/metrolib -Isrc -I. -Isymlinks",
+  defines   = "-DCONFIG_DEBUG"
+)
 
-  if type(file_out) is list:
-    for f in file_out:
-      if needs_rebuild(file_in, f):
-        return True
-    return False
+compile_c   = tinybuild.command(
+  command   = "{toolchain}-gcc {opts} {includes} {defines} -c {file_in} -o {file_out}",
+  desc      = "Compiling C {file_in} => {file_out}",
+  opts      = "-Wunused-variable -Werror -MMD -g -O0",
+  includes  = "-Isymlinks/metrolib -Isrc -I. -Isymlinks",
+  defines   = "-DCONFIG_DEBUG",
+)
 
-  if not os.path.exists(file_in):
-    print(f"File {file_in} not found!")
-    return False;
-  if not os.path.exists(file_out):
-    return True;
+c_library = tinybuild.command(
+  command = "ar rcs {file_out} {' '.join(files_in)}",
+  desc    = "Bundling {file_out}",
+)
 
-  result = os.path.getmtime(file_in) > os.path.getmtime(file_out)
-  #if result is True:
-  #  print(f"File {file_in} is newer than {file_out}")
-  #else:
-  #  print(f"File {file_out} up to date")
-  return result
-
-################################################################################
-
-def do_command(command, **kwargs):
-  formatted_command = eval(f"f\"{command}\"", globals(), kwargs)
-  return os.system(formatted_command)
-
-def gen_command(command, **kwargs):
-  def action(srcs):
-    files_out = []
-    for src in srcs:
-      file_in = src
-      file_out = "obj/" + swap_ext(file_in, ".o")
-
-      kwargs["file_in"] = file_in
-      kwargs["file_out"] = file_out
-
-      os.makedirs(os.path.dirname(file_out), exist_ok = True)
-      if needs_rebuild(file_in, file_out):
-        print(f"Compiling {file_in} ==> {file_out}")
-        do_command(command, **kwargs)
-      files_out.append(file_out)
-    return files_out
-  return action
-
-################################################################################
-
-def c_library(files_in, file_out):
-  files_out = [file_out]
-  if needs_rebuild(files_in, file_out):
-    print(f"Linking {file_out}")
-    os.system(f"ar rcs {file_out} {join_space(files_in)}")
-  return files_out
-
-################################################################################
-
-compile_cpp = gen_command(
-  command   = "{toolchain}-g++ {join_space(opts)} {join_space(includes)} {join_space(defines)} -c {file_in} -o {file_out}",
-  toolchain = "x86_64-linux-gnu",
-  opts      = ["-std=gnu++2a", "-Wunused-variable", "-Werror", "-MMD", "-g", "-O0"],
-  includes  = ["-Isymlinks/metrolib", "-Isrc", "-I.", "-Isymlinks"],
-  defines   = ["-DCONFIG_DEBUG"]
+c_binary    = tinybuild.command(
+  command   = "{toolchain}-g++ {opts} {' '.join(files_in)} {libraries} -o {file_out}",
+  desc      = "Linking {file_out}",
+  opts      = "-g",
+  libraries = ""
 )
 
 ################################################################################
 
-MetroBoyLib_srcs = glob.glob("src/MetroBoyLib/*.cpp")
-MetroBoyLib_objs = compile_cpp(MetroBoyLib_srcs)
-MetroBoyLib_lib  = c_library(MetroBoyLib_objs, "obj/src/MetroBoyLib/MetroBoyLib.a")
+GateBoyLib_srcs = glob.glob("src/GateBoyLib/*.cpp")
+GateBoyLib_objs = ["obj/" + tinybuild.swap_ext(f, ".o") for f in GateBoyLib_srcs]
+GateBoyLib_lib  = "obj/src/GateBoyLib/GateBoyLib.a"
 
-#def format_thing(command, _globals, _locals):
-#  return eval(f"f\"{command}\"", _globals, _locals)
-#
-#foo = ["foo", "bar", "baz"]
-#print(format_thing("Hello {join_space(foo)}", globals(), locals()))
+#compile_cpp(GateBoyLib_srcs, GateBoyLib_objs)
+#c_library(GateBoyLib_objs, GateBoyLib_lib)
+
+MetroBoyLib_srcs = glob.glob("src/MetroBoyLib/*.cpp")
+MetroBoyLib_objs = ["obj/" + tinybuild.swap_ext(f, ".o") for f in MetroBoyLib_srcs]
+MetroBoyLib_lib  = "obj/src/MetroBoyLib/MetroBoyLib.a"
+
+compile_cpp(MetroBoyLib_srcs, MetroBoyLib_objs)
+c_library(MetroBoyLib_objs, MetroBoyLib_lib)
+
+#compile_cpp("src/GateBoyApp/GateBoyApp.cpp", "obj/src/GateBoyApp/GateBoyApp.o")
+
+#compile_c("symlinks/glad/glad.c", "obj/glad.o")
+
+GateBoyApp_objs = [
+  "obj/src/GateBoyApp/GateBoyApp.o",
+  "obj/src/GateBoyLib/GateBoyLib.a",
+  "obj/glad.o",
+  "symlinks/metrolib/bin/metrolib/libappbase.a",
+  "symlinks/metrolib/bin/metrolib/libaudio.a",
+  "symlinks/metrolib/bin/metrolib/libcore.a",
+  "symlinks/metrolib/bin/metrolib/libgameboy.a",
+  "bin/imgui.a",
+]
+
+#c_binary(
+#  GateBoyApp_objs,
+#  "obj/src/GateBoyApp/GateBoyApp",
+#  libraries="-lSDL2 -ldl -lpthread"
+#)

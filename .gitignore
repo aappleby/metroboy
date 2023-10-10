@@ -10,3 +10,4 @@ bin
 *.o
 *.gb
 *.exe
+__pycache__

@@ -11,7 +11,7 @@ tinybuild.config["verbose"]   = False
 compile_cpp = tinybuild.command(
   command   = "{toolchain}-g++ {opts} {includes} {defines} -c {file_in} -o {file_out}",
   desc      = "Compiling C++ {file_in} => {file_out}",
-  opts      = "-std=gnu++2a -Wunused-variable -Werror -MMD -g -O0",
+  opts      = "-std=gnu++2a -Wunused-variable -Werror -MD -MF ${out}.d -g -O0",
   includes  = "-Isymlinks/metrolib -Isrc -I. -Isymlinks",
   defines   = "-DCONFIG_DEBUG"
 )
@@ -19,7 +19,7 @@ compile_cpp = tinybuild.command(
 compile_c   = tinybuild.command(
   command   = "{toolchain}-gcc {opts} {includes} {defines} -c {file_in} -o {file_out}",
   desc      = "Compiling C {file_in} => {file_out}",
-  opts      = "-Wunused-variable -Werror -MMD -g -O0",
+  opts      = "-Wunused-variable -Werror -MD -MF ${out}.d -g -O0",
   includes  = "-Isymlinks/metrolib -Isrc -I. -Isymlinks",
   defines   = "-DCONFIG_DEBUG",
 )

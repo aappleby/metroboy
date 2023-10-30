@@ -6,10 +6,14 @@ import tinybuild
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--verbose',  action='store_true', help='Print verbose build info')
+parser.add_argument('--clean',    action='store_true', help='Delete intermediate files')
+parser.add_argument('--serial',   action='store_true', help='Do not parallelize actions')
 options = parser.parse_args()
 
 tinybuild.config["toolchain"] = "x86_64-linux-gnu"
 tinybuild.config["verbose"]   = options.verbose
+tinybuild.config["clean"]     = options.clean
+tinybuild.config["serial"]    = options.serial
 
 ################################################################################
 

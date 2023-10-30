@@ -16,10 +16,11 @@ def expand(text, arg_dict):
 
 config = {
   "verbose"    : False,
+  "clean"      : False,
   "swap_ext"   : swap_ext
 }
 
-pool = None
+pool = multiprocessing.Pool(multiprocessing.cpu_count())
 
 ################################################################################
 
@@ -63,23 +64,22 @@ def needs_rebuild(file_in, file_out):
 
 ################################################################################
 
-def run_command(files_in, files_out, arg_dict):
-  arg_dict["file_in"]   = files_in[0]
-  arg_dict["files_in"]  = files_in
-  arg_dict["file_out"]  = files_out[0]
-  arg_dict["files_out"] = files_out
+def clean(files_in, files_out, **kwargs):
+  if type(files_out) is list:
+    for file in files_out:
+      clean(files_in, file)
+    return
+  if os.path.exists(files_out):
+    print(f"Cleaning {files_out}")
+    os.system(f"rm {files_out}")
 
-  if not needs_rebuild(files_in, files_out):
-    return 0
+################################################################################
 
-  for file_out in files_out:
-    dirname = os.path.dirname(file_out)
-    if dirname:
-      os.makedirs(dirname, exist_ok = True)
-
+def run_something(arg_dict):
   if "desc" in arg_dict:
     print(expand(arg_dict["desc"], arg_dict))
 
+  command = 
   formatted_command = expand(arg_dict["command"], arg_dict)
 
   if arg_dict["verbose"]:
@@ -87,27 +87,42 @@ def run_command(files_in, files_out, arg_dict):
 
   if os.system(formatted_command):
     print(f"Command failed: \"{formatted_command}\"")
-    return 1
+    print("Aborting build")
+    sys.exit(result)
+
   return 0
+
+################################################################################
+
+def run_batch(files_in, files_out, arg_dict):
+  arg_dict["files_in"]  = files_in
+  arg_dict["files_out"] = files_out
+  run_something(arg_dict)
+
+################################################################################
+
+def run_map(file_in, file_out, arg_dict):
+  arg_dict["file_in"]   = file_in
+  arg_dict["file_out"]  = file_out
+  run_something(arg_dict)
 
 ################################################################################
 
 def run_parallel(files_in, files_out, arg_dict):
   global pool
-  if pool is None:
-    pool = multiprocessing.Pool(multiprocessing.cpu_count())
   results = []
   for i in range(len(files_in)):
-    result = pool.apply_async(run_command, [[files_in[i]], [files_out[i]], arg_dict])
+    result = pool.apply_async(run_map, [files_in[i], files_out[i], arg_dict])
     results.append(result)
-  sum = 0
   for result in results:
-    sum = sum + result.get()
-  return sum
+    result.get()
 
 ################################################################################
 
 def command(**kwargs):
+  if config["clean"] is True:
+    return clean
+
   top_kwargs = dict(config)
   top_kwargs.update(kwargs)
   top_kwargs["config"] = config;
@@ -120,15 +135,49 @@ def command(**kwargs):
     files_in  = files_in  if type(files_in)  is list else [files_in]
     files_out = files_out if type(files_out) is list else [files_out]
 
-    result = 0
-    if len(files_in) == len(files_out):
-      result = run_parallel(files_in, files_out, local_kwargs)
+    if not needs_rebuild(files_in, files_out):
+      return
+
+    for file_out in files_out:
+      dirname = os.path.dirname(file_out)
+      if dirname:
+        os.makedirs(dirname, exist_ok = True)
+
+
+    if len(files_in) == len(files_out) and not config["serial"]:
+      run_parallel(files_in, files_out, local_kwargs)
     else:
-      result = run_command(files_in, files_out, local_kwargs)
-    if result != 0:
-      print("Aborting build")
-      sys.exit(result)
+      for i in range(len(files_in)):
+        run_command([files_in[i]], [files_out[i]], local_kwargs)
 
   return action
+
+################################################################################
+
+def batch(**kwargs):
+  if config["clean"] is True:
+    return clean
+
+  top_kwargs = dict(config)
+  top_kwargs.update(kwargs)
+  top_kwargs["config"] = config;
+  top_kwargs["rule"] = kwargs;
+
+  def action(files_in, files_out, **kwargs):
+    local_kwargs = dict(top_kwargs)
+    local_kwargs.update(kwargs)
+
+    if not needs_rebuild(files_in, files_out):
+      return
+
+    for file_out in files_out:
+      dirname = os.path.dirname(file_out)
+      if dirname:
+        os.makedirs(dirname, exist_ok = True)
+
+    run_command(files_in, files_out, local_kwargs)
+
+  return action
+
 
 ################################################################################

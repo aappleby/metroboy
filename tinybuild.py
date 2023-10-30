@@ -1,11 +1,18 @@
 #!/usr/bin/python3
 
 import os
+import re
 import sys
 import multiprocessing
 
 def swap_ext(name, new_ext):
     return os.path.splitext(name)[0] + new_ext
+
+def expand(text, arg_dict):
+  if text is not None:
+    while re.search("{[^}]*?}", text) is not None:
+      text = eval("f\"" + text + "\"", {}, arg_dict)
+  return text
 
 config = {
   "verbose"    : False,
@@ -36,12 +43,12 @@ def needs_rebuild(file_in, file_out):
 
   if not os.path.exists(file_out):
     if config['verbose']:
-      print(f"Rebuild caused by missing {file_out}")
+      print(f"Rebuild caused by missing output {file_out}")
     return True;
 
   if os.path.getmtime(file_in) > os.path.getmtime(file_out):
     if config['verbose']:
-      print(f"Rebuild caused by changed {file_in}")
+      print(f"Rebuild caused by changed input {file_in}")
     return True
 
   deps_file = swap_ext(file_out, ".d")
@@ -49,7 +56,7 @@ def needs_rebuild(file_in, file_out):
     for dep in open(deps_file).read().split():
       if os.path.exists(dep) and os.path.getmtime(dep) > os.path.getmtime(file_out):
         if config['verbose']:
-          print(f"Rebuild caused by changed {dep}")
+          print(f"Rebuild caused by changed dep {dep}")
         return True
 
   return False
@@ -66,12 +73,14 @@ def run_command(files_in, files_out, arg_dict):
     return 0
 
   for file_out in files_out:
-    os.makedirs(os.path.dirname(file_out), exist_ok = True)
+    dirname = os.path.dirname(file_out)
+    if dirname:
+      os.makedirs(dirname, exist_ok = True)
 
   if "desc" in arg_dict:
-    print(eval("f\"" + arg_dict["desc"] + "\"", {}, arg_dict))
+    print(expand(arg_dict["desc"], arg_dict))
 
-  formatted_command = eval("f\"" + arg_dict["command"] + "\"", {}, arg_dict)
+  formatted_command = expand(arg_dict["command"], arg_dict)
 
   if arg_dict["verbose"]:
     print(formatted_command)

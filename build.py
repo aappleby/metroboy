@@ -1,96 +1,109 @@
 #!/usr/bin/python3
 
-import argparse
 import glob
 import tinybuild
+import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--verbose',  action='store_true', help='Print verbose build info')
-parser.add_argument('--clean',    action='store_true', help='Delete intermediate files')
-parser.add_argument('--serial',   action='store_true', help='Do not parallelize actions')
+parser.add_argument('--verbose',  default=False, action='store_true', help='Print verbose build info')
+parser.add_argument('--clean',    default=False, action='store_true', help='Delete intermediate files')
+parser.add_argument('--serial',   default=False, action='store_true', help='Do not parallelize actions')
+parser.add_argument('--dry_run',  default=False, action='store_true', help='Do not run actions')
 options = parser.parse_args()
-
-tinybuild.config["toolchain"] = "x86_64-linux-gnu"
-tinybuild.config["verbose"]   = options.verbose
-tinybuild.config["clean"]     = options.clean
-tinybuild.config["serial"]    = options.serial
 
 ################################################################################
 
-compile_cpp = tinybuild.command(
-  command   = "{toolchain}-g++ {opts} {includes} {defines} -c {file_in} -o {file_out}",
+tinybuild.global_config["verbose"] = options.verbose
+tinybuild.global_config["clean"  ] = options.clean
+tinybuild.global_config["serial" ] = options.serial
+tinybuild.global_config["dry_run"] = options.dry_run
+
+tinybuild.global_config["toolchain"]  = "x86_64-linux-gnu"
+tinybuild.global_config["build_type"] = "-g -O0"
+tinybuild.global_config["warnings"]   = "-Wunused-variable -Werror"
+tinybuild.global_config["depfile"]    = "-MMD -MF {file_out}.d"
+tinybuild.global_config["defines"]    = "-DCONFIG_DEBUG"
+tinybuild.global_config["cpp_std"]    = "-std=gnu++2a"
+
+compile_cpp = tinybuild.map(
   desc      = "Compiling C++ {file_in} => {file_out}",
-  opts      = "-std=gnu++2a -Wunused-variable -Werror -MD -MF {file_out}.d -g -O0",
+  command   = "{toolchain}-g++ {opts} {includes} {defines} -c {file_in} -o {file_out}",
+  opts      = "{cpp_std} {warnings} {depfile} {build_type}",
   includes  = "-Isymlinks/metrolib -Isrc -I. -Isymlinks",
-  defines   = "-DCONFIG_DEBUG"
 )
 
-compile_c   = tinybuild.command(
-  command   = "{toolchain}-gcc {opts} {includes} {defines} -c {file_in} -o {file_out}",
+compile_c   = tinybuild.map(
   desc      = "Compiling C {file_in} => {file_out}",
-  opts      = "-Wunused-variable -Werror -MD -MF {file_out}.d -g -O0",
+  command   = "{toolchain}-gcc {opts} {includes} {defines} -c {file_in} -o {file_out}",
+  opts      = "{warnings} {depfile} {build_type}",
   includes  = "-Isymlinks/metrolib -Isrc -I. -Isymlinks",
-  defines   = "-DCONFIG_DEBUG",
 )
 
-c_library = tinybuild.command(
-  command = "ar rcs {file_out} {' '.join(files_in)}",
-  desc    = "Bundling {file_out}",
+link_c_lib = tinybuild.reduce(
+  desc      = "Bundling {file_out}",
+  command   = "ar rcs {file_out} {join(files_in)}",
 )
 
-c_binary    = tinybuild.command(
-  command   = "{toolchain}-g++ {opts} {' '.join(files_in)} {libraries} -o {file_out}",
+link_c_bin  = tinybuild.reduce(
   desc      = "Linking {file_out}",
-  opts      = "-g",
+  command   = "{toolchain}-g++ {opts} {join(files_in)} {join(deps)} {libraries} -o {file_out}",
+  opts      = "{build_type}",
   libraries = ""
 )
 
+def obj_name(x):
+  return "obj/" + tinybuild.swap_ext(x, ".o")
+
 ################################################################################
+
+print("########## Building ImGui")
 
 imgui_srcs = glob.glob("symlinks/imgui/*.cpp")
-imgui_objs = ["obj/" + tinybuild.swap_ext(f, ".o") for f in imgui_srcs]
-imgui_lib  = "bin/imgui.a"
+imgui_objs = [obj_name(f) for f in imgui_srcs]
 
 compile_cpp(imgui_srcs, imgui_objs)
-c_library  (imgui_objs, imgui_lib)
+link_c_lib(imgui_objs, "bin/imgui.a")
 
-compile_c  ("symlinks/glad/glad.c", "obj/glad.o")
+print("########## Building glad")
 
-################################################################################
+compile_c("symlinks/glad/glad.c", "obj/glad.o")
+
+print("########## Building GateBoyLib")
 
 GateBoyLib_srcs = glob.glob("src/GateBoyLib/*.cpp")
-GateBoyLib_objs = ["obj/" + tinybuild.swap_ext(f, ".o") for f in GateBoyLib_srcs]
-GateBoyLib_lib  = "obj/src/GateBoyLib/GateBoyLib.a"
+GateBoyLib_objs = [obj_name(f) for f in GateBoyLib_srcs]
 
 compile_cpp(GateBoyLib_srcs, GateBoyLib_objs)
-c_library  (GateBoyLib_objs, GateBoyLib_lib)
+link_c_lib(GateBoyLib_objs, "obj/src/GateBoyLib/GateBoyLib.a")
 
-################################################################################
+print("########## Building MetroBoyLib")
 
 MetroBoyLib_srcs = glob.glob("src/MetroBoyLib/*.cpp")
-MetroBoyLib_objs = ["obj/" + tinybuild.swap_ext(f, ".o") for f in MetroBoyLib_srcs]
-MetroBoyLib_lib  = "obj/src/MetroBoyLib/MetroBoyLib.a"
+MetroBoyLib_objs = [obj_name(f) for f in MetroBoyLib_srcs]
 
 compile_cpp(MetroBoyLib_srcs, MetroBoyLib_objs)
-c_library  (MetroBoyLib_objs, MetroBoyLib_lib)
 
-################################################################################
+link_c_lib(MetroBoyLib_objs, "obj/src/MetroBoyLib/MetroBoyLib.a")
+
+print("########## Building GateBoyApp")
 
 compile_cpp("src/GateBoyApp/GateBoyApp.cpp", "obj/src/GateBoyApp/GateBoyApp.o")
 
-GateBoyApp_objs = [
-  "obj/src/GateBoyApp/GateBoyApp.o",
-  "obj/src/GateBoyLib/GateBoyLib.a",
-  "obj/glad.o",
-  "symlinks/metrolib/bin/metrolib/libappbase.a",
-  "symlinks/metrolib/bin/metrolib/libaudio.a",
-  "symlinks/metrolib/bin/metrolib/libcore.a",
-  "symlinks/metrolib/bin/metrolib/libgameboy.a",
-  "bin/imgui.a",
-]
-
-c_binary(
-  GateBoyApp_objs,
-  "bin/GateBoyApp",
+link_c_bin(
+  files_in = [
+    "obj/src/GateBoyApp/GateBoyApp.o",
+    "obj/glad.o"
+  ],
+  files_out = "bin/GateBoyApp",
+  deps = [
+    "obj/src/GateBoyLib/GateBoyLib.a",
+    "symlinks/metrolib/bin/metrolib/libappbase.a",
+    "symlinks/metrolib/bin/metrolib/libaudio.a",
+    "symlinks/metrolib/bin/metrolib/libcore.a",
+    "symlinks/metrolib/bin/metrolib/libgameboy.a",
+    "bin/imgui.a",
+  ],
   libraries="-lSDL2 -ldl -lpthread"
 )
+
+################################################################################

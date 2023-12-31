@@ -1,22 +1,13 @@
 #!/usr/bin/python3
+# Experimental use of metrolib/tinybuild.py, beware
 
+import sys
 import glob
-import tinybuild
-import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--verbose',  default=False, action='store_true', help='Print verbose build info')
-parser.add_argument('--clean',    default=False, action='store_true', help='Delete intermediate files')
-parser.add_argument('--serial',   default=False, action='store_true', help='Do not parallelize actions')
-parser.add_argument('--dry_run',  default=False, action='store_true', help='Do not run actions')
-options = parser.parse_args()
+sys.path.append("symlinks/metrolib")
+import tinybuild
 
 ################################################################################
-
-tinybuild.global_config["verbose"] = options.verbose
-tinybuild.global_config["clean"  ] = options.clean
-tinybuild.global_config["serial" ] = options.serial
-tinybuild.global_config["dry_run"] = options.dry_run
 
 tinybuild.global_config["toolchain"]  = "x86_64-linux-gnu"
 tinybuild.global_config["build_type"] = "-g -O0"

@@ -5,7 +5,7 @@
 #include "metrolib/core/Dumper.h"
 
 #include <assert.h>
-#include "imgui/imgui.h"
+#include "third_party/imgui/imgui.h"
 
 #pragma warning(disable:4189)
 #pragma warning(disable:4244)

@@ -1,0 +1,57 @@
+import glob
+
+hancho.base_rules = hancho.repo("{hancho_dir}/base_rules.hancho")
+hancho.metrolib   = hancho.repo("symlinks/metrolib/build.hancho")
+hancho.glad       = hancho.repo("symlinks/third_party/glad.hancho")
+hancho.imgui      = hancho.repo("symlinks/third_party/imgui.hancho")
+
+hancho.config.defines  = ["CONFIG_DEBUG"]
+hancho.config.includes = ["src", "symlinks", "symlinks/metrolib"]
+
+libs = [
+    hancho.metrolib.libappbase,
+    hancho.metrolib.libaudio,
+    hancho.metrolib.libcore,
+    hancho.metrolib.libgameboy,
+    hancho.glad.lib,
+    hancho.imgui.lib,
+]
+
+gateboy_app = hancho(
+    hancho.base_rules.cpp_bin,
+    in_srcs = [glob.glob("src/GateBoyLib/*.cpp"), "src/GateBoyApp/GateBoyApp.cpp"],
+    in_libs = libs,
+    sys_libs = ["-lSDL2", "-ldl", "-lpthread"],
+    out_bin = "gateboy_app",
+)
+
+metroboy_app = hancho(
+    hancho.base_rules.cpp_bin,
+    in_srcs = [glob.glob("src/MetroBoyLib/*.cpp"), "src/MetroBoyApp/MetroBoyApp.cpp"],
+    in_libs = libs,
+    sys_libs = ["-lSDL2"],
+    out_bin = "metroboy_app"
+)
+
+"""
+# Windows build
+
+################################################################################
+
+# we define SIM_AUDIO in config.h otherwise VSCode gets confused about what's
+# enabled and what's not
+#-DSIM_AUDIO
+
+# not having NDEBUG turns assert()s on
+
+build_mode = /O2 /D CONFIG_RELEASE /D NDEBUG /D _CRT_SECURE_NO_WARNINGS
+#build_mode = /D CONFIG_RELEASE /D _CRT_SECURE_NO_WARNINGS
+#build_mode = /D CONFIG_DEBUG /D _CRT_SECURE_NO_WARNINGS
+
+default_gpp = CL.exe /nologo /std:c++latest /EHsc /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2 /sdl- /Gm- /GS- /Z7 /DEBUG /FS /GL
+default_gcc = CL.exe /nologo /std:c17 /showIncludes
+
+default_includes = /Isrc /Isymlinks /Isymlinks/glad
+global_libs      = src/SDL2.lib
+
+"""

@@ -5,8 +5,8 @@ hancho.metrolib   = hancho.repo("symlinks/metrolib/build.hancho")
 hancho.glad       = hancho.repo("symlinks/third_party/glad.hancho")
 hancho.imgui      = hancho.repo("symlinks/third_party/imgui.hancho")
 
-hancho.config.defines  = ["CONFIG_DEBUG"]
-hancho.config.includes = ["src", "symlinks", "symlinks/metrolib"]
+hancho.context.defines  = ["CONFIG_DEBUG"]
+hancho.context.includes = ["src", "symlinks", "symlinks/metrolib"]
 
 libs = [
     hancho.metrolib.libappbase,
